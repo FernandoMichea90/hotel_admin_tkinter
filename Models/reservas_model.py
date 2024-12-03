@@ -118,7 +118,7 @@ class ReservasModel:
 
     def list_reservations(self):
         """Obtiene todas las reservas de la base de datos."""
-        self.cursor.execute("SELECT * FROM reservas_tkinter")
+        self.cursor.execute("SELECT rt.codigo,rt.check_in, rt.check_out, rt.nombre, rt.apellido, rt.habitacion FROM reservas_tkinter rt")
         return self.cursor.fetchall()
 
     def get_reservation_by_id(self, reserva_id):

@@ -61,3 +61,14 @@ class ReservasController:
         except Exception as e:
             print(e)
             return {"status": "error", "message": str(e)}
+        
+    def listar_reservas(self):
+        try:
+            
+            return self.model.list_reservations()
+            
+            
+        except Exception as e:
+             print(e)
+             return {"status": "error", "message": str(e)}
+
