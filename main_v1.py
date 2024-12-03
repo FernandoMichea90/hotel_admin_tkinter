@@ -175,7 +175,7 @@ class App(tk.Tk):
    
     def mostrar_card(self, reserva, parent_frame):
         """Crear y mostrar una tarjeta con la información de una reserva."""
-        card_frame = tk.Frame(parent_frame, bg="#f7f7f7", bd=0, relief="solid", padx=10, pady=10)
+        card_frame = tk.Frame(parent_frame, bg="#f7f7f7", bd=0, relief="solid", padxr=10, pady=10)
         card_frame.pack(fill="x", pady=10)
 
         nombre = f"{reserva[1]} {reserva[2]}"
