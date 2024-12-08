@@ -71,4 +71,11 @@ class ReservasController:
         except Exception as e:
              print(e)
              return {"status": "error", "message": str(e)}
+         
+    def get_reserva(self, id_reserva):
+        try:
+            return self.model.get_reservation_by_id(id_reserva)
+        except Exception as e:
+            print(e)
+            return {"status": "error", "message": str(e)}
 
