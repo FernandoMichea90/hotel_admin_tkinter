@@ -60,9 +60,10 @@ def crear_reservas(self):
     step3 = ctk.CTkFrame(stepper, fg_color="white")
     stepper.add(step3, text="Paso 3: Procedencia y Pago")
 
-    procedencia_options = ["Booking", "Pagina web", "Whatsapp", "Walking"]
-    pago_options = ["Tarjeta", "Transferencia", "Efectivo"]
-    tipo_documento_options = ["Factura", "Factura de exportacion", "Boleta", "Efectivo"]
+    procedencia_options = ["Booking", "Pagina web", "Whatsapp", "Walking","Pendiente"]
+    pago_options = ["Tarjeta", "Transferencia", "Efectivo","Pendiente"]
+    tipo_documento_options = ["Factura", "Factura de exportacion", "Boleta", "Efectivo","Pendiente"]
+    estado_options = ["Pagado", "Pendiente"]
 
     campos_step3 = [
         ("Procedencia", ctk.CTkOptionMenu(step3, values=procedencia_options)),
@@ -71,6 +72,7 @@ def crear_reservas(self):
         ("Folio DTE", ctk.CTkEntry(step3, width=300)),
         ("Facturado", ctk.CTkCheckBox(step3, text="Facturado")),
         ("Transbank", ctk.CTkEntry(step3, width=300)),
+        ("Estado Pago", ctk.CTkOptionMenu(step3,values=estado_options))
     ]
 
     for idx, (label_text, widget) in enumerate(campos_step3):
@@ -110,6 +112,7 @@ def guardar_reserva(campos_step1, campos_step2, campos_step3, controller):
         "folio_factura": campos_step3[3][1].get(),
         "facturado": campos_step3[4][1].get(),
         "transbank": campos_step3[5][1].get(),
+        "estado2": campos_step3[6][1].get()
     }
 
     # Llamar al controlador para agregar la reserva

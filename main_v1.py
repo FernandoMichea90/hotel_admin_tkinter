@@ -4,6 +4,7 @@ import mysql.connector
 import customtkinter as ctk
 from Vistas.Pasajeros.crear import crear_reservas
 from Vistas.Reservas.reserva_view import  ReservaView
+from Vistas.Reservas.edit_reserva import editar_reserva
 # Clase para la aplicación principal
 class App(tk.Tk):
     def __init__(self):
@@ -46,6 +47,17 @@ class App(tk.Tk):
 
         reserva_view = ReservaView(self.content_frame)  # Crear una instancia de ReservaView
         reserva_view.mostrar_reservas() 
+    
+    
+    def edit_reserva(self,id):
+        """Editar una reserva."""
+        print('App edit_reserva')
+        for widget in self.content_frame.winfo_children():
+            widget.destroy()
+        
+        rv=ReservaView(self.content_frame)
+        rv.edit_reserva(id)
+    
     
     
     def mostrar_reserva(self,id):
@@ -175,7 +187,7 @@ class App(tk.Tk):
         finally:
             if 'cursor' in locals():
                 cursor.close()
-            if 'conn' in locals():
+            if 'conn' in locals():  
                 conn.close()
 
         # Hacer que el scroll funcione con la rueda del ratón

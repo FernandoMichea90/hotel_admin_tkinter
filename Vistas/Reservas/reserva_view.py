@@ -5,14 +5,15 @@ import customtkinter as ctk
 from datetime import date
 from Controller.reserva_controller import ReservasController
 from Vistas.Pasajeros.crear import crear_reservas
-
+from tkinter import messagebox
+from Vistas.Reservas.edit_reserva import editar_reserva
 class MyScrollableCardFrame(ctk.CTkScrollableFrame):
     def __init__(self, master, title, values,reserva_view):
         super().__init__(master, label_text=title)
         self.reserva_view = reserva_view
         self.values = values
         self.cards = []
-
+        
         for i, value in enumerate(self.values):
             # Crear un "card" como un CTkFrame
             card = customtkinter.CTkFrame(self, corner_radius=20, fg_color="white")
@@ -69,7 +70,7 @@ class MyScrollableCardFrame(ctk.CTkScrollableFrame):
                 right_frame,
                 text="Editar",
                 width=100,
-                command=lambda v=value: self.card_action(v),
+                command=lambda v=value: self.edit_reserva(v),
                 anchor="center",
                 fg_color="white",  # Color de fondo inicial
                 border_color="blue",  # Color del borde
@@ -84,7 +85,7 @@ class MyScrollableCardFrame(ctk.CTkScrollableFrame):
                 right_frame,
                 text="Borrar",
                 width=100,
-                command=lambda v=value: self.card_action(v),
+                command=lambda v=value: self.borra_reserva(v),
                 anchor="center",
                 fg_color="white",  # Color de fondo inicial
                 border_color="red",  # Color del borde
@@ -96,10 +97,23 @@ class MyScrollableCardFrame(ctk.CTkScrollableFrame):
             self.cards.append(card)
     def card_action(self, value):
         print(f"Action on card: {value}")
+    
+    def edit_reserva(self, value):
+        # print("master")
+        # print(self.master)
+        # self.master.master.master.destroy()
+ 
+        # for widget in self.master.winfo_children():
+        #     widget.destroy()
+        editar_reserva(self,value['id'])
+                
     def show_reserva(self, value):
             self.reserva_view.clean()  # Llama al método clean en la instancia correcta
             print(value)
             self.reserva_view.mostrar_reserva(value['id'])
+            
+    def borra_reserva(self, value):
+        self.reserva_view.borra_reserva(value)
 
 class ReservaView:
     def __init__(self, master):
@@ -144,7 +158,8 @@ class ReservaView:
             border_width=0,
             corner_radius=10,
             text_color="#ffffff",
-            command=self.clean
+            command= lambda: crear_reservas(self=self)
+
         )
         button.pack(side="right", padx=10)
         
@@ -377,3 +392,18 @@ class ReservaView:
 
         # Seleccionar la primera pestaña por defecto
         notebook.select(0)
+    def borra_reserva(self, value):
+        respuesta= messagebox.askyesno(
+            "Confirmación requerida",
+            f"¿Estás seguro de que deseas eliminar la reserva con ID {value['id']}? Esta acción no se puede deshacer."
+        )
+        if respuesta:
+            self.ReservaController.eliminar_reserva(value['id'])
+            messagebox.showinfo(
+                "Reserva Eliminada",
+                f"La reserva con ID {value['id']} ha sido eliminada."
+            )
+            self.clean()
+            self.mostrar_reservas()
+        else:
+            messagebox.showinfo("Operación Cancelada", "La reserva no ha sido eliminada.")

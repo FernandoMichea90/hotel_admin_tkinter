@@ -152,6 +152,7 @@ class ReservasModel:
         return self.cursor.fetchall()
 
     def get_reservation_by_id(self, reserva_id):
+        print('reserva_id', reserva_id)
         """Obtiene una reserva por su ID y retorna un objeto Reserva."""
         query = "SELECT * FROM reservas_tkinter WHERE id = %s"
         
@@ -161,7 +162,6 @@ class ReservasModel:
                 row = cursor.fetchone()
                 
                 if row:
-                    print("esta es la fila",row)
                     # Creamos una instancia de la clase Reserva con los datos obtenidos
                     reserva = self.Reserva(
                         id=row['id'],
@@ -199,3 +199,61 @@ class ReservasModel:
             except Exception as e:
                 print(f"Error: {e}")
                 return None
+    
+    
+    def update_reservation(self,reserva_data):
+        #   reserva_data = {
+        #         "id": reserva_id,
+        #         "nombre": nombre,
+        #         "apellido": apellido,
+        #         "correo": correo,
+        #         "celular": celular,
+        #         "direccion": direccion,
+        #         "rut_pasaporte": rut_pasaporte,
+        #         "pais": pais,
+        #         "check_in": checkin,
+        #         "check_out": checkout,
+        #         "habitacion": habitacion,
+        #         "adultos": adultos,
+        #         "ninos": ninos,
+        #         "precio": precio,
+        #         "procedencia": procedencia,
+        #         "pago": metodo_pago,
+        #         "tipo_documento": dte,
+        #         "estado_pago": estado_pago
+        #     }
+        try:
+            
+            # print('Procedencia ',reserva_data['procedencia'])
+            self.cursor.execute("""
+            UPDATE reservas_tkinter
+            SET nombre = %s, apellido = %s, correo = %s, celular = %s, direccion = %s, rut_pasaporte = %s, pais = %s,
+                check_in = %s, check_out = %s, habitacion = %s, adultos = %s, ninos = %s, precio = %s, procedencia = %s,
+                pago = %s, tipo_documento = %s, estado2 = %s
+            WHERE id = %s;
+            """, (
+                reserva_data.get('nombre', None),
+                reserva_data.get('apellido', None),
+                reserva_data.get('correo', None),
+                reserva_data.get('celular', None),
+                reserva_data.get('direccion', None),
+                reserva_data.get('rut_pasaporte', None),
+                reserva_data.get('pais', None),
+                reserva_data.get('check_in', None),
+                reserva_data.get('check_out', None),
+                reserva_data.get('habitacion', None),
+                reserva_data.get('adultos', None),
+                reserva_data.get('ninos', None),
+                reserva_data.get('precio', None),
+                reserva_data.get('procedencia', None),
+                reserva_data.get('pago', None),
+                reserva_data.get('tipo_documento', None),
+                reserva_data.get('estado2', None),
+                reserva_data.get('id', None)
+            ))
+            self.connection.commit()
+        except Exception as e:
+            print(f"Error: {e}")
+            return None
+        return True
+        
