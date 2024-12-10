@@ -71,4 +71,45 @@ class ReservasController:
         except Exception as e:
              print(e)
              return {"status": "error", "message": str(e)}
+         
+    def  get_reserva(self, id_reserva):
+        try:
+            return self.model.get_reservation_by_id(id_reserva)
+        except Exception as e:
+            print(e)
+            return {"status": "error", "message": str(e)}
+    def eliminar_reserva(self, reserva_id):
+        try:
+            self.model.delete_reservation(reserva_id)
+            return {"status": "success", "message": "Reserva eliminada correctamente"}
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
+        
+    def actualizar_reserva(self,reserva_id, nombre, apellido, correo, celular, direccion, rut_pasaporte, pais, checkin, checkout, habitacion, adultos, ninos, precio, procedencia, metodo_pago, dte, estado_pago):
+        try:
+            reserva_data = {
+                "id": reserva_id,
+                "nombre": nombre,
+                "apellido": apellido,
+                "correo": correo,
+                "celular": celular,
+                "direccion": direccion,
+                "rut_pasaporte": rut_pasaporte,
+                "pais": pais,
+                "check_in": checkin,
+                "check_out": checkout,
+                "habitacion": habitacion,
+                "adultos": adultos,
+                "ninos": ninos,
+                "precio": precio,
+                "procedencia": procedencia,
+                "pago": metodo_pago,
+                "tipo_documento": dte,
+                "estado_pago": estado_pago
+            }
+            self.model.update_reservation(reserva_data)
+            return True
+        except Exception as e:
+            print(e)
+            return False
 

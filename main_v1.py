@@ -4,12 +4,13 @@ import mysql.connector
 import customtkinter as ctk
 from Vistas.Pasajeros.crear import crear_reservas
 from Vistas.Reservas.reserva_view import  ReservaView
+from Vistas.Reservas.edit_reserva import editar_reserva
 # Clase para la aplicación principal
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Sistema de Reservas")
-        self.geometry("800x600")
+        self.geometry("800x600+0+0")
 
         # Configuración de la ventana principal
         self.grid_rowconfigure(0, weight=1)
@@ -18,7 +19,7 @@ class App(tk.Tk):
         # Crear el panel izquierdo (menú)
         self.menu_frame = tk.Frame(self, bg="green", width=200)
         self.menu_frame.grid(row=0, column=0, sticky="ns")  # Ocupa toda la altura
-        self.menu_frame.grid_propagate(False)  # Evitar que el tamaño cambie
+        self.menu_frame.grid_propagate(False)  # Evitar que el tamaño cambie    
 
         # Crear el panel derecho (información)
         self.content_frame = tk.Frame(self, bg="white")
@@ -46,6 +47,26 @@ class App(tk.Tk):
 
         reserva_view = ReservaView(self.content_frame)  # Crear una instancia de ReservaView
         reserva_view.mostrar_reservas() 
+    
+    
+    def edit_reserva(self,id):
+        """Editar una reserva."""
+        print('App edit_reserva')
+        for widget in self.content_frame.winfo_children():
+            widget.destroy()
+        
+        rv=ReservaView(self.content_frame)
+        rv.edit_reserva(id)
+    
+    
+    
+    def mostrar_reserva(self,id):
+        """Mostrar la información de una reserva."""
+        for widget in self.content_frame.winfo_children():
+            widget.destroy()
+        
+        rv=ReservaView(self.content_frame)
+        rv.mostrar_reserva(id)  
     
     def configurar_menu(self):
         """Configurar botones del menú en el panel izquierdo."""
@@ -166,7 +187,7 @@ class App(tk.Tk):
         finally:
             if 'cursor' in locals():
                 cursor.close()
-            if 'conn' in locals():
+            if 'conn' in locals():  
                 conn.close()
 
         # Hacer que el scroll funcione con la rueda del ratón
