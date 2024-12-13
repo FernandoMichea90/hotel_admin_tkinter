@@ -1,5 +1,6 @@
 from datetime import date
 from Models.reservas_model import ReservasModel
+from Models.reservas_orm_model import listar_reservas, filtrar_reservas_por_fecha
 class ReservasController:
     def __init__(self):
         self.model = ReservasModel()
@@ -107,9 +108,48 @@ class ReservasController:
                 "tipo_documento": dte,
                 "estado_pago": estado_pago
             }
+            # agregar atributos calculados: codigo, noches, precio_unitario
+            # dias transcurridos
+            fecha_base = date(1900, 1, 1)
+            dias_transcurridos = (checkin - fecha_base).days
+            dias_transcurridos=dias_transcurridos+2 #equivalente a excel
+            print('dias_transcurridos',dias_transcurridos)
+            # noches 
+            noches = (checkout - checkin).days
+            print('noches',noches)
+            # precio unitario
+            if noches > 0:
+                print('inicio precio unitario')
+                precio_unitario = float(precio) // noches  # División entera para obtener un precio unitario entero
+                precio_unitario=int(precio_unitario)
+                print('fin precio unitario',precio_unitario)
+            else:
+                precio_unitario=0
+            #codigo 
+            codigo = str(dias_transcurridos) + habitacion
+            print('codigo',codigo)
+            
+            #agregar atributos calculados al diccionario
+            reserva_data["codigo"] = codigo
+            reserva_data["noches"] = noches
+            reserva_data["precio_unitario"] = precio_unitario
+            #actualizar reserva
             self.model.update_reservation(reserva_data)
             return True
         except Exception as e:
             print(e)
             return False
 
+    def listar_reservas_orm(self):
+        try:
+            return listar_reservas()
+        except Exception as e:
+            print(e)
+            return {"status": "error", "message": str(e)}
+    
+    def listar_reservas_por_fecha( inicio, fin):
+        try:
+            return filtrar_reservas_por_fecha(inicio, fin)
+        except Exception as e:
+            print(e)
+            return {"status": "error", "message": str(e)}

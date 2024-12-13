@@ -5,6 +5,8 @@ import customtkinter as ctk
 from Vistas.Pasajeros.crear import crear_reservas
 from Vistas.Reservas.reserva_view import  ReservaView
 from Vistas.Reservas.edit_reserva import editar_reserva
+from Vistas.Reservas.reserva_orm_view import ReservaOrmView
+
 # Clase para la aplicación principal
 class App(tk.Tk):
     def __init__(self):
@@ -47,8 +49,14 @@ class App(tk.Tk):
 
         reserva_view = ReservaView(self.content_frame)  # Crear una instancia de ReservaView
         reserva_view.mostrar_reservas() 
-    
-    
+    def mostrar_orm_reservas(self):
+        """Mostrar contenido del panel derecho para Reservas."""
+        # Limpiar contenido actual
+        for widget in self.content_frame.winfo_children():
+            widget.destroy()
+
+        ReservaOrmView(self.content_frame)
+        
     def edit_reserva(self,id):
         """Editar una reserva."""
         print('App edit_reserva')
@@ -72,8 +80,9 @@ class App(tk.Tk):
         """Configurar botones del menú en el panel izquierdo."""
         botones = [
             ("🏠 Home", self.mostrar_home),
-            ("📋 Reservas", self.mostrar_reservas),
-            ("📋 Pasajeros", self.mostrar_reservas_dos)
+            ("📋 Hoy", self.mostrar_reservas_dos),
+            ("📅 Reservas", self.mostrar_orm_reservas),
+            
 
         ]
 
