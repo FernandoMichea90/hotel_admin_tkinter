@@ -11,7 +11,6 @@ class ReservasController:
         Calcula `codigo`, `noches`, y `precio_unitario` antes de agregar la reserva.
         """
         try:
-            print("llego aqui")
             # Extraer los datos de reserva
             check_in = reserva_data["check_in"]
             checkout = reserva_data["check_out"]
@@ -65,13 +64,17 @@ class ReservasController:
         
     def listar_reservas(self):
         try:
-            
             return self.model.list_reservations()
-            
-            
         except Exception as e:
              print(e)
              return {"status": "error", "message": str(e)}
+    
+    def listar_reservas_por_hoy(self):
+        try:
+            return self.model.list_reservations_by_today()
+        except Exception as e:
+            print(e)
+            return {"status": "error", "message": str(e)}
          
     def  get_reserva(self, id_reserva):
         try:
@@ -147,7 +150,7 @@ class ReservasController:
             print(e)
             return {"status": "error", "message": str(e)}
     
-    def listar_reservas_por_fecha( inicio, fin):
+    def listar_reservas_por_fecha(self, inicio, fin):
         try:
             return filtrar_reservas_por_fecha(inicio, fin)
         except Exception as e:

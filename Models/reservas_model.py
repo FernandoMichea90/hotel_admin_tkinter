@@ -119,7 +119,7 @@ class ReservasModel:
                 reserva_data.get('noches', None), 
                 reserva_data.get('estado_pago',None),
                 reserva_data.get('precio_unitario', None), 
-                reserva_data.get('transbank', 0), 
+                reserva_data.get('transbank', None), 
                 reserva_data.get('facturado', False),  
                 reserva_data.get('tipo_documento', None), 
                 reserva_data.get('folio_factura', 0)
@@ -149,6 +149,11 @@ class ReservasModel:
     def list_reservations(self):
         """Obtiene todas las reservas de la base de datos."""
         self.cursor.execute("SELECT * FROM reservas_tkinter rt")
+        return self.cursor.fetchall()
+    
+    def list_reservations_by_today(self):
+        """Obtiene todas las reservas de la base de datos."""
+        self.cursor.execute("SELECT * FROM reservas_tkinter rt WHERE rt.check_in = current_date")
         return self.cursor.fetchall()
 
     def get_reservation_by_id(self, reserva_id):
