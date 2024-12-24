@@ -32,7 +32,7 @@ class ReservaOrmView:
         button_reservas.pack(side="right", padx=10)
 
         # Crear frame body 
-        self.frame_body = ctk.CTkFrame(self.frame, corner_radius=10)
+        self.frame_body = ctk.CTkFrame(self.frame, corner_radius=10,bg_color="green")
         self.frame_body.pack(padx=10, pady=10, fill="both", side="top",expand=True)
     
         self.main_body()
@@ -41,7 +41,7 @@ class ReservaOrmView:
     
     def main_body(self):
         # Crear Frame Fechas 
-        self.frame_fechas = ctk.CTkFrame(self.frame_body,corner_radius=10) 
+        self.frame_fechas = ctk.CTkFrame(self.frame_body,corner_radius=10,bg_color="green") 
         self.frame_fechas.pack(padx=10, pady=10,side='top',fill='x')
         
         
@@ -64,7 +64,7 @@ class ReservaOrmView:
         self.btn_filtrar = ctk.CTkButton(self.frame_fechas, text="Filtrar", font=("Arial", 12),command=self.filtrar_reservas)
         self.btn_filtrar.pack(side="right",padx=10, pady=10)
         # crear frame para la tabla
-        self.table_frame = ctk.CTkFrame(self.frame_body)
+        self.table_frame = ctk.CTkFrame(self.frame_body,bg_color="purple")
         self.table_frame.pack(fill="both", expand=True, padx=10, pady=10)
         # Tabla para mostrar las reservas
         self.tree = ttk.Treeview(self.table_frame, columns=("id", "codigo", "nombre", "check_in", "check_out"), show="headings", selectmode="browse")
@@ -105,19 +105,19 @@ class ReservaOrmView:
 
     def weekly_view(self):
         # Crear un frame para el header
-        self.frame_header = ctk.CTkFrame(self.frame_body)
+        self.frame_header = ctk.CTkFrame(self.frame_body,bg_color="pink")
         self.frame_header.pack(pady=10, padx=10, side="top", fill="x")
         #crear un frame para el body 
-        self.frame_main_body = ctk.CTkFrame(self.frame_body)
+        self.frame_main_body = ctk.CTkFrame(self.frame_body,bg_color="green")
         self.frame_main_body.pack(pady=10, padx=10, side="top", fill="both", expand=True)
         # Agregar un título a la vista
         label_titulo = ctk.CTkLabel(self.frame_header, text="Vista Semanal", font=("Arial", 14, "bold"), text_color="green")
         label_titulo.pack(padx=10, pady=10, side="left")
         
         # Agregar un boton hacia atras y adelante
-        button_adelante = ctk.CTkButton(self.frame_header, text="➡️", font=("Arial", 12),command=lambda: self.update_week_table(1))
+        button_adelante = ctk.CTkButton(self.frame_header, text="➡️", font=("Arial", 12),command=lambda: self.update_week_table(NUM_DIAS))
         button_adelante.pack(side="right", padx=10)
-        button_atras = ctk.CTkButton(self.frame_header, text="⬅️", font=("Arial", 12),command=lambda: self.update_week_table(-1))
+        button_atras = ctk.CTkButton(self.frame_header, text="⬅️", font=("Arial", 12),command=lambda: self.update_week_table(-NUM_DIAS))
         button_atras.pack(side="right", padx=10)
         
         self.start_date = datetime.now()  # Fecha inicial de la tabla
@@ -130,22 +130,15 @@ class ReservaOrmView:
         for widget in self.frame_main_body.winfo_children():
             widget.destroy()
         # Generar fechas desde hoy hasta los próximos 7 días
-        fechas = [(start_date + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(7)]
+        fechas = [(start_date + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(NUM_DIAS)]
 
         # Lista de habitaciones
         habitaciones = list(range(21, 30)) + list(range(31, 37))
-        
-        # Datos ficticios de ocupación (puedes reemplazar con datos reales)
-        ocupaciones = {
-            21: {"2024-12-23": "Juan", "2024-12-24": "Ana María Specter Litt"},
-            22: {"2024-12-26": "Luis"},
-            31: {"2024-12-28": "Carlos", "2024-12-29": "María"},
-        }
-                
-                # Datos ficticios de ocupación con estado de pago
+    
+        # Datos ficticios de ocupación con estado de pago
         ocupaciones = {
             21: {
-                "2024-12-23": {"cliente": "Juan", "pagado": True},
+                "2024-12-22": {"cliente": "Juan", "pagado": False},
                 "2024-12-24": {"cliente": "Ana María Specter Litt", "pagado": False}
             },
             22: {
@@ -157,23 +150,31 @@ class ReservaOrmView:
             },
         }
         # Crear un Frame para la tabla
-        frame_week_table = ctk.CTkFrame(self.frame_main_body)
-        frame_week_table.pack(pady=10, padx=10,side='left', fill="both", expand=True)
+        frame_week_table = ctk.CTkFrame(self.frame_main_body, bg_color="red")
+        frame_week_table.pack(fill="both", expand=True)
 
+        # Frame contenedor para Canvas y scrollbar vertical
+        canvas_frame = tk.Frame(frame_week_table)
+        canvas_frame.pack(side="top", fill="both", expand=True)
         # Agregar scroll al frame
         # crear el canvas
-        canvas = tk.Canvas(frame_week_table)
-        canvas.pack(fill="both", expand=True)
+        canvas = tk.Canvas(canvas_frame)
+        canvas.pack(side="left",fill="both",expand=True)
+
         
         #agrergar el scrollbar
-        scrollbar = ttk.Scrollbar(frame_week_table,orient="horizontal" , command=canvas.xview,style="TScrollbar")
-        scrollbar.pack(side="bottom", fill="x")
+        scrollbar_vertical = ttk.Scrollbar(canvas_frame,orient="vertical" , command=canvas.yview)
+        scrollbar_vertical.pack(side="right", fill="y")
         
+        scrollbar_horizontal = ttk.Scrollbar(frame_week_table,orient="horizontal" , command=canvas.xview)
+        scrollbar_horizontal.pack(side="bottom", fill="x")
+
+    
         #configurar el canvas
-        canvas.configure(xscrollcommand=scrollbar.set)
+        canvas.configure(yscrollcommand=scrollbar_vertical.set, xscrollcommand=scrollbar_horizontal.set)
         canvas.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
         
-        canvas_frame = ctk.CTkFrame(canvas)
+        canvas_frame = ctk.CTkFrame(canvas, bg_color="blue")
         canvas.create_window((0,0), window=canvas_frame, anchor="nw")
         
             # Cargar la imagen del emoji
@@ -181,30 +182,46 @@ class ReservaOrmView:
             emoji_image = Image.open("image.png")  # Asegúrate de tener el archivo image.png
             emoji_image = emoji_image.resize((9, 9))  # Ajustar tamaño de la imagen
             emoji_photo = ImageTk.PhotoImage(emoji_image)
+            red_image = Image.open("utils/img/red.png")  # Asegúrate de tener el archivo image.png
+            red_image = red_image.resize((9, 9))  # Ajustar tamaño de la imagen
+            red_photo = ImageTk.PhotoImage(red_image)
+            green_image = Image.open("utils/img/green.png")  # Asegúrate de tener el archivo image.png
+            green_image = green_image.resize((9, 9))  # Ajustar tamaño de la imagen
+            green_photo = ImageTk.PhotoImage(green_image)
+            yellow_image = Image.open("utils/img/yellow.png")  # Asegúrate de tener el archivo image.png
+            yellow_image = yellow_image.resize((9, 9))  # Ajustar tamaño de la imagen
+            yellow_photo = ImageTk.PhotoImage(yellow_image)
         except FileNotFoundError:
             print("La imagen 'image.png' no se encuentra.")
             return
                     
         # Crear encabezados de columnas (fechas)
-        tk.Label(canvas_frame, text="Habitación", borderwidth=1, relief="solid", width=15).grid(row=0, column=0)
+        tk.Label(canvas_frame, text="Habitación", borderwidth=1, relief="solid", width=15,height=2).grid(row=0, column=0)
         for col, fecha in enumerate(fechas, start=1):
-            tk.Label(canvas_frame, text=fecha, borderwidth=1, relief="solid", width=35).grid(row=0, column=col)
+            tk.Label(canvas_frame, text=fecha, borderwidth=1, relief="solid", width=35,height=2).grid(row=0, column=col)
 
         # Rellenar filas con habitaciones y ocupaciones
         for row, habitacion in enumerate(habitaciones, start=1):
             # Columna de habitación
-            tk.Label(canvas_frame, text=f"Habitación {habitacion}", borderwidth=1, relief="solid", width=15).grid(row=row, column=0)
+            tk.Label(canvas_frame, text=f"Habitación {habitacion}", borderwidth=1, relief="solid", width=15,height=2).grid(row=row, column=0)
             # Columnas de ocupación
             for col, fecha in enumerate(fechas, start=1):
                 ocupacion = ocupaciones.get(habitacion, {}).get(fecha, "")  # Obtener cliente o vacío
                 if ocupacion:
                     cliente = ocupacion["cliente"]
                     pagado = ocupacion["pagado"]
-                    label=tk.Label(canvas_frame,text=cliente,image=emoji_photo,compound="left", borderwidth=1, relief="solid", width=200,font=("Segoe UI Emoji", 9))
+                    if pagado:
+                        _photo = green_photo
+                    else:
+                        if fecha == datetime.now().strftime("%Y-%m-%d"):
+                            _photo = red_photo
+                        else:
+                            _photo = yellow_photo
+                    label=tk.Label(canvas_frame,text=cliente,image=_photo,compound="left", borderwidth=1, relief="solid", width=200,font=("Segoe UI Emoji", 9),height=2)
                     label.grid(row=row, column=col,sticky="nsew")
-                    label.image = emoji_photo  # Esto mantiene la referencia
+                    label.image = _photo  # Esto mantiene la referencia
                 else:
-                    tk.Label(canvas_frame, text="", borderwidth=1, relief="solid", width=35).grid(row=row, column=col,sticky="nsew")
+                    tk.Label(canvas_frame, text="", borderwidth=1, relief="solid", width=35,height=2).grid(row=row, column=col,sticky="nsew")
                 
 
     def update_week_table(self, days):
