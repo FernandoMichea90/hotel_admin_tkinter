@@ -7,8 +7,7 @@ from tkcalendar import DateEntry
 from datetime import timedelta
 from PIL import Image, ImageTk
 
-
-NUM_DIAS = 3  # Número de días por bloque
+NUM_DIAS = 7  # Número de días por bloque
 
 class ReservaOrmView:
     def __init__(self,master):
@@ -136,10 +135,14 @@ class ReservaOrmView:
         habitaciones = list(range(21, 30)) + list(range(31, 37))
     
         # Datos ficticios de ocupación con estado de pago
+        
+    
         ocupaciones = {
             21: {
                 "2024-12-22": {"cliente": "Juan", "pagado": False},
-                "2024-12-24": {"cliente": "Ana María Specter Litt", "pagado": False}
+                "2024-12-23": {"cliente": "Ana María Specter Litt", "pagado": False},
+                "2024-12-24": {"cliente": "Ana María Specter Litt", "pagado": False},
+
             },
             22: {
                 "2024-12-26": {"cliente": "Luis", "pagado": True}
@@ -149,7 +152,11 @@ class ReservaOrmView:
                 "2024-12-29": {"cliente": "María", "pagado": True}
             },
         }
-        # Crear un Frame para la tabla
+        # la fecha de inicio y fin debe estar en formato YYYY-MM-DD
+        inicio = start_date.strftime("%Y-%m-%d")
+        fin = (start_date + timedelta(days=NUM_DIAS - 1)).strftime("%Y-%m-%d")
+        ocupaciones = self.reserva_controller.obtener_ocupaciones_por_fecha(inicio, fin)
+        # Crear un Frame para lreserva_controllera tabla
         frame_week_table = ctk.CTkFrame(self.frame_main_body, bg_color="red")
         frame_week_table.pack(fill="both", expand=True)
 

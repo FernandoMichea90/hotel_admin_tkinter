@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 from Models.reservas_model import ReservasModel
 from Models.reservas_orm_model import listar_reservas, filtrar_reservas_por_fecha
 class ReservasController:
@@ -153,6 +153,39 @@ class ReservasController:
     def listar_reservas_por_fecha(self, inicio, fin):
         try:
             return filtrar_reservas_por_fecha(inicio, fin)
+        except Exception as e:
+            print(e)
+            return {"status": "error", "message": str(e)}
+    
+    def obtener_ocupaciones_por_fecha(self, inicio, fin):
+        try:
+            print(inicio, fin)
+            # Filtrar las reservas en el rango de fechas especificado
+            reservas = filtrar_reservas_por_fecha(inicio, fin)
+          
+            ocupaciones = {}
+            for reserva in reservas:
+                habitacion_id = int(reserva.habitacion)
+                check_in = reserva.check_in
+                check_out = reserva.check_out
+                cliente = f"{reserva.nombre} {reserva.apellido}"
+                pagado = reserva.estado2 == 'Pagado'
+
+                # Asegurar que la habitación exista en el diccionario
+                if habitacion_id not in ocupaciones:
+                    ocupaciones[habitacion_id] = {}
+
+                # Generar fechas desde check_in hasta el día anterior a check_out
+                fecha_actual = check_in
+                while fecha_actual < check_out:
+                    ocupaciones[habitacion_id][fecha_actual.strftime("%Y-%m-%d")] = {
+                        "cliente": cliente,
+                        "pagado": pagado
+                    }
+                    fecha_actual += timedelta(days=1)
+
+            print(ocupaciones)
+            return ocupaciones
         except Exception as e:
             print(e)
             return {"status": "error", "message": str(e)}
