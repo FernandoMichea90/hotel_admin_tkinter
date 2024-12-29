@@ -61,6 +61,7 @@ session = Session()
 
 # Funciones del modelo
 def listar_reservas():
+    print("Listar reservas")
     return session.query(Reserva).all()
 
 def filtrar_reservas_por_fecha(inicio, fin):
@@ -69,3 +70,14 @@ def filtrar_reservas_por_fecha(inicio, fin):
             Reserva.check_in.between(inicio, fin),
             Reserva.check_out.between(inicio, fin)
         )).all()
+    
+def agregar_reserva(reserva_data):
+    reserva = Reserva(**reserva_data)
+    session.add(reserva)
+    session.commit()
+    return reserva
+
+def actualizar_reserva(reserva_data):
+    reserva_id = reserva_data.pop("id")
+    session.query(Reserva).filter(Reserva.id == reserva_id).update(reserva_data)
+    session.commit()

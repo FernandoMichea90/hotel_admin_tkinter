@@ -6,6 +6,8 @@ from datetime import datetime
 from tkcalendar import DateEntry
 from datetime import timedelta
 from PIL import Image, ImageTk
+from Vistas.Reservas.edit_reserva import editar_reserva
+
 
 NUM_DIAS = 7  # Número de días por bloque
 
@@ -62,6 +64,23 @@ class ReservaOrmView:
         # Botón para filtrar
         self.btn_filtrar = ctk.CTkButton(self.frame_fechas, text="Filtrar", font=("Arial", 12),command=self.filtrar_reservas)
         self.btn_filtrar.pack(side="right",padx=10, pady=10)
+        #crear frame para  buscar, editar y eliminar 
+        self.frame_botones = ctk.CTkFrame(self.frame_body,bg_color="green")
+        # crear input para buscar
+        self.entry_buscar = ctk.CTkEntry(self.frame_botones, font=("Arial", 12))
+        self.entry_buscar.pack(side="left", padx=10, pady=10)
+        # crear boton para buscar
+        self.btn_buscar = ctk.CTkButton(self.frame_botones, text="Buscar", font=("Arial", 12))
+        self.btn_buscar.pack(side="left", padx=10, pady=10)
+        # crear boton para editar
+        self.btn_editar = ctk.CTkButton(self.frame_botones, text="Editar", font=("Arial", 12),command=self.edit_row)
+        self.btn_editar.pack(side="left", padx=10, pady=10)
+        # crear boton para eliminar
+        self.btn_eliminar = ctk.CTkButton(self.frame_botones, text="Eliminar", font=("Arial", 12))
+        self.btn_eliminar.pack(side="left", padx=10, pady=10)
+        self.frame_botones.pack(padx=10, pady=10, side="top", fill="x")
+        
+        
         # crear frame para la tabla
         self.table_frame = ctk.CTkFrame(self.frame_body,bg_color="purple")
         self.table_frame.pack(fill="both", expand=True, padx=10, pady=10)
@@ -89,7 +108,40 @@ class ReservaOrmView:
         reservas_listas = self.reserva_controller.listar_reservas_orm()
         self.fill_table(reservas_listas)
         
+    # funcion para actualizar la tabla
+    # la funcion puede ser una funcion lambda
+    def update_table(self):
+        # Limpiar la tabla antes de insertar nuevas reservas
+        for row in self.tree.get_children():
+            self.tree.delete(row)
 
+        # Insertar las reservas en la tabla
+        reservas_listas = self.reserva_controller.listar_reservas_orm()
+        self.fill_table(reservas_listas)
+        
+    
+        
+    def edit_row(self):
+        """Abre una ventana para editar la fila seleccionada."""
+        # Obtener la fila seleccionada
+        selected_item = self.tree.selection()
+        if not selected_item:
+            messagebox.showerror("Error", "Por favor selecciona una fila para editar.")
+            return
+
+        # Obtener los valores de la fila seleccionada
+        values = self.tree.item(selected_item, "values")
+        print(values)
+        # Crear una ventana para editar la fila
+        edit_window = tk.Toplevel(self.master)
+        edit_window.title("Editar Reserva")
+        # crear frame para el contenido
+        frame_content_window = ctk.CTkFrame(edit_window, corner_radius=10, bg_color="white")
+        frame_content_window.pack(padx=10, pady=10, fill="both", expand=True)
+        # Llamar a la función para editar la reserva
+        editar_reserva(self,int(values[0]), frame_content_window,edit_window,self.update_table)
+        
+      
     def clean_frame_body(self):
         for widget in self.frame_body.winfo_children():
             widget.destroy()
@@ -130,28 +182,8 @@ class ReservaOrmView:
             widget.destroy()
         # Generar fechas desde hoy hasta los próximos 7 días
         fechas = [(start_date + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(NUM_DIAS)]
-
         # Lista de habitaciones
-        habitaciones = list(range(21, 30)) + list(range(31, 37))
-    
-        # Datos ficticios de ocupación con estado de pago
-        
-    
-        ocupaciones = {
-            21: {
-                "2024-12-22": {"cliente": "Juan", "pagado": False},
-                "2024-12-23": {"cliente": "Ana María Specter Litt", "pagado": False},
-                "2024-12-24": {"cliente": "Ana María Specter Litt", "pagado": False},
-
-            },
-            22: {
-                "2024-12-26": {"cliente": "Luis", "pagado": True}
-            },
-            31: {
-                "2024-12-28": {"cliente": "Carlos", "pagado": False},
-                "2024-12-29": {"cliente": "María", "pagado": True}
-            },
-        }
+        habitaciones = list(range(21, 30)) + list(range(31, 37))    
         # la fecha de inicio y fin debe estar en formato YYYY-MM-DD
         inicio = start_date.strftime("%Y-%m-%d")
         fin = (start_date + timedelta(days=NUM_DIAS - 1)).strftime("%Y-%m-%d")
@@ -167,8 +199,6 @@ class ReservaOrmView:
         # crear el canvas
         canvas = tk.Canvas(canvas_frame)
         canvas.pack(side="left",fill="both",expand=True)
-
-        
         #agrergar el scrollbar
         scrollbar_vertical = ttk.Scrollbar(canvas_frame,orient="vertical" , command=canvas.yview)
         scrollbar_vertical.pack(side="right", fill="y")
@@ -176,7 +206,6 @@ class ReservaOrmView:
         scrollbar_horizontal = ttk.Scrollbar(frame_week_table,orient="horizontal" , command=canvas.xview)
         scrollbar_horizontal.pack(side="bottom", fill="x")
 
-    
         #configurar el canvas
         canvas.configure(yscrollcommand=scrollbar_vertical.set, xscrollcommand=scrollbar_horizontal.set)
         canvas.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
@@ -259,6 +288,10 @@ class ReservaOrmView:
         try:
             fecha_inicio = datetime.strptime(inicio, "%Y-%m-%d")
             fecha_fin = datetime.strptime(fin, "%Y-%m-%d")
+            # filtrar las reservas por fecha de check-in y check-out
+            reservas_filtradas = self.reserva_controller.listar_reservas_por_fecha(inicio, fin)
+            self.fill_table(reservas_filtradas)
+            
         except ValueError:
             messagebox.showerror("Error", "Las fechas deben tener el formato YYYY-MM-DD.")
             return

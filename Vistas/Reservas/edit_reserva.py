@@ -4,14 +4,19 @@ from tkcalendar import DateEntry
 import customtkinter as ctk
 from Controller.reserva_controller import ReservasController
 
-def editar_reserva(self, reserva_id):
+def editar_reserva(self, reserva_id, frame=None,window=None,update_table=None):
     """Mostrar contenido del panel derecho para editar una reserva."""
 
     # Crear un frame para el contenido
-    self.content_frame = self.master.master
-    for widget in self.content_frame.winfo_children():
-        widget.destroy()
+    if frame is None:     
+        self.content_frame = self.master.master
+        for widget in self.content_frame.winfo_children():
+            widget.destroy()
 
+    else:
+        self.content_frame = frame
+        for widget in self.content_frame.winfo_children():
+            widget.destroy()    
     # Conectar al controlador
     controller = ReservasController()
 
@@ -157,12 +162,12 @@ def editar_reserva(self, reserva_id):
             pais_entry.get(), checkin_entry.get_date(), checkout_entry.get_date(),
             habitacion_entry.get(), adultos_entry.get(), ninos_entry.get(),
             precio_entry.get(), procedencia_entry.get(), metodo_pago_entry.get(),
-            dte_entry.get(), estado_pago_entry.get()
+            dte_entry.get(), estado_pago_entry.get(),window,update_table
         )
     )
     save_btn.grid(row=4, columnspan=2, pady=20)
 
-def actualizar_reserva(reserva_id, nombre, apellido, correo, celular, direccion, rut_pasaporte, pais, checkin, checkout, habitacion, adultos, ninos, precio, procedencia, metodo_pago, dte, estado_pago="Pendiente"):
+def actualizar_reserva(reserva_id, nombre, apellido, correo, celular, direccion, rut_pasaporte, pais, checkin, checkout, habitacion, adultos, ninos, precio, procedencia, metodo_pago, dte, estado_pago="Pendiente",window=None,update_table=None):
     """Actualizar los datos de una reserva existente."""
     
     # Imprimir los valores de las variables antes de enviarlas al controlador
@@ -192,5 +197,8 @@ def actualizar_reserva(reserva_id, nombre, apellido, correo, celular, direccion,
     updated = controller.actualizar_reserva(reserva_id, nombre, apellido, correo, celular, direccion, rut_pasaporte, pais, checkin, checkout, habitacion, adultos, ninos, precio, procedencia, metodo_pago, dte, estado_pago)
     if updated:
         messagebox.showinfo("Éxito", "Reserva actualizada correctamente.")
+        if window:
+            update_table()
+            window.destroy()
     else:
         messagebox.showerror("Error", "No se pudo actualizar la reserva.")

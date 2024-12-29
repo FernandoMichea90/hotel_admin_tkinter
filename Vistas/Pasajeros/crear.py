@@ -3,7 +3,6 @@ from tkinter import messagebox, ttk
 from tkcalendar import DateEntry
 import customtkinter as ctk
 from Controller.reserva_controller import ReservasController
-
 def crear_reservas(self):
     """Mostrar contenido del panel derecho para Reservas."""
     # Limpiar contenido actual
@@ -109,9 +108,9 @@ def guardar_reserva(campos_step1, campos_step2, campos_step3, controller):
         "procedencia": campos_step3[0][1].get(),
         "pago": campos_step3[1][1].get(),
         "tipo_documento": campos_step3[2][1].get(),
-        "folio_factura": campos_step3[3][1].get(),
+        "folio_factura": campos_step3[3][1].get() or 0,
         "facturado": campos_step3[4][1].get(),
-        "transbank": campos_step3[5][1].get(),
+        "transbank": campos_step3[5][1].get() or 0,
         "estado2": campos_step3[6][1].get()
     }
 
