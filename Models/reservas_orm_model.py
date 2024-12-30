@@ -81,3 +81,7 @@ def actualizar_reserva(reserva_data):
     reserva_id = reserva_data.pop("id")
     session.query(Reserva).filter(Reserva.id == reserva_id).update(reserva_data)
     session.commit()
+    
+def eliminar_reserva(reserva_id):
+    session.query(Reserva).filter(Reserva.id == reserva_id).delete()
+    session.commit()

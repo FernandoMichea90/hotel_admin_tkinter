@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 from Models.reservas_model import ReservasModel
-from Models.reservas_orm_model import listar_reservas, filtrar_reservas_por_fecha, agregar_reserva,actualizar_reserva
+from Models.reservas_orm_model import listar_reservas, filtrar_reservas_por_fecha, agregar_reserva,actualizar_reserva,eliminar_reserva
 class ReservasController:
     def __init__(self):
         self.model = ReservasModel()
@@ -75,9 +75,9 @@ class ReservasController:
         except Exception as e:
             print(e)
             return {"status": "error", "message": str(e)}
-    def eliminar_reserva(self, reserva_id):
+    def delete_reserva(self, reserva_id):
         try:
-            self.model.delete_reservation(reserva_id)
+            eliminar_reserva(reserva_id)
             return {"status": "success", "message": "Reserva eliminada correctamente"}
         except Exception as e:
             return {"status": "error", "message": str(e)}

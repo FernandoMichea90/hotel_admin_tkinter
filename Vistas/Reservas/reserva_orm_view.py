@@ -76,7 +76,7 @@ class ReservaOrmView:
         self.btn_editar = ctk.CTkButton(self.frame_botones, text="Editar", font=("Arial", 12),command=self.edit_row)
         self.btn_editar.pack(side="left", padx=10, pady=10)
         # crear boton para eliminar
-        self.btn_eliminar = ctk.CTkButton(self.frame_botones, text="Eliminar", font=("Arial", 12))
+        self.btn_eliminar = ctk.CTkButton(self.frame_botones, text="Eliminar", font=("Arial", 12),command=self.delete_row)
         self.btn_eliminar.pack(side="left", padx=10, pady=10)
         self.frame_botones.pack(padx=10, pady=10, side="top", fill="x")
         
@@ -140,7 +140,28 @@ class ReservaOrmView:
         frame_content_window.pack(padx=10, pady=10, fill="both", expand=True)
         # Llamar a la función para editar la reserva
         editar_reserva(self,int(values[0]), frame_content_window,edit_window,self.update_table)
-        
+    
+    # eliminar una reserva
+    def delete_row(self):
+        """Elimina la fila seleccionada."""
+        # Obtener la fila seleccionada
+        selected_item = self.tree.selection()
+        if not selected_item:
+            messagebox.showerror("Error", "Por favor selecciona una fila para eliminar.")
+            return
+
+        # Obtener el ID de la fila seleccionada
+        reserva_id = self.tree.item(selected_item, "values")[0]
+        # Confirmar si se desea eliminar la reserva
+        confirmar = messagebox.askyesno("Confirmar", "¿Estás seguro de eliminar esta reserva?")
+        if confirmar:
+            # Eliminar la reserva
+            resultado = self.reserva_controller.delete_reserva(reserva_id)
+            if resultado["status"] == "success":
+                messagebox.showinfo("Éxito", resultado["message"])
+                self.update_table()
+            else:
+                messagebox.showerror("Error", resultado["message"])
       
     def clean_frame_body(self):
         for widget in self.frame_body.winfo_children():
