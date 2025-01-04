@@ -164,7 +164,7 @@ class ReservaView:
         button.pack(side="right", padx=10)
         
         reserva_controller=ReservasController()   
-        self.scrollable_card_frame = MyScrollableCardFrame(self.content_frame, title="Reservas", values=reserva_controller.listar_reservas(),reserva_view=self)
+        self.scrollable_card_frame = MyScrollableCardFrame(self.content_frame, title="Reservas", values=reserva_controller.listar_reservas_por_hoy(),reserva_view=self)
         self.scrollable_card_frame.pack(fill="both", expand=True, padx=20, pady=20)
 
     def mostrar_reserva_uno(self, id_reserva):

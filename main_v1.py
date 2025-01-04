@@ -59,7 +59,6 @@ class App(tk.Tk):
         
     def edit_reserva(self,id):
         """Editar una reserva."""
-        print('App edit_reserva')
         for widget in self.content_frame.winfo_children():
             widget.destroy()
         
@@ -83,7 +82,6 @@ class App(tk.Tk):
             ("📋 Hoy", self.mostrar_reservas_dos),
             ("📅 Reservas", self.mostrar_orm_reservas),
             
-
         ]
 
         for text, command in botones:

@@ -11,6 +11,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import or_
 
 
 Base = declarative_base()
@@ -60,7 +61,27 @@ session = Session()
 
 # Funciones del modelo
 def listar_reservas():
+    print("Listar reservas")
     return session.query(Reserva).all()
 
 def filtrar_reservas_por_fecha(inicio, fin):
-    return session.query(Reserva).filter(Reserva.check_in.between(inicio, fin)).all()
+    return session.query(Reserva).filter(
+            or_(
+            Reserva.check_in.between(inicio, fin),
+            Reserva.check_out.between(inicio, fin)
+        )).all()
+    
+def agregar_reserva(reserva_data):
+    reserva = Reserva(**reserva_data)
+    session.add(reserva)
+    session.commit()
+    return reserva
+
+def actualizar_reserva(reserva_data):
+    reserva_id = reserva_data.pop("id")
+    session.query(Reserva).filter(Reserva.id == reserva_id).update(reserva_data)
+    session.commit()
+    
+def eliminar_reserva(reserva_id):
+    session.query(Reserva).filter(Reserva.id == reserva_id).delete()
+    session.commit()

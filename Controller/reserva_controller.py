@@ -1,6 +1,6 @@
-from datetime import date
+from datetime import date, timedelta
 from Models.reservas_model import ReservasModel
-from Models.reservas_orm_model import listar_reservas, filtrar_reservas_por_fecha
+from Models.reservas_orm_model import listar_reservas, filtrar_reservas_por_fecha, agregar_reserva,actualizar_reserva,eliminar_reserva
 class ReservasController:
     def __init__(self):
         self.model = ReservasModel()
@@ -11,25 +11,20 @@ class ReservasController:
         Calcula `codigo`, `noches`, y `precio_unitario` antes de agregar la reserva.
         """
         try:
-            print("llego aqui")
             # Extraer los datos de reserva
             check_in = reserva_data["check_in"]
             checkout = reserva_data["check_out"]
             precio = reserva_data["precio"]
             habitacion = reserva_data["habitacion"]
-            print(check_in)
-            print(checkout)
+            
             # Definir la fecha base (1 de enero de 1900)
             fecha_base = date(1900, 1, 1)
 
             # Calcular la diferencia en días entre la fecha base y el check_in
             dias_transcurridos = (check_in - fecha_base).days
-            print(dias_transcurridos)
             dias_transcurridos=dias_transcurridos+2 #equivalente a excel
-            print(dias_transcurridos)
             # El código se forma concatenando los días transcurridos con la habitación
             codigo = str(dias_transcurridos) + habitacion
-            print(codigo)
             # Calcular la cantidad de noches (restar las fechas)
             noches = (checkout - check_in).days
 
@@ -38,10 +33,7 @@ class ReservasController:
                 precio_unitario = precio // noches  # División entera para obtener un precio unitario entero
             else:
                 precio_unitario = 0
-            print(noches)
-            print(precio_unitario)
-
-
+            
         # Convierte las fechas a cadenas con el formato adecuado
             check_in_str = reserva_data['check_in'].strftime('%Y-%m-%d')
             check_out_str = reserva_data['check_out'].strftime('%Y-%m-%d')
@@ -55,8 +47,8 @@ class ReservasController:
             reserva_data["precio_unitario"] = precio_unitario
 
             # Agregar la reserva en la base de datos
-            print(reserva_data)
-            self.model.add_reservation(reserva_data)
+            # self.model.add_reservation(reserva_data)
+            agregar_reserva(reserva_data)   
             return {"status": "success", "message": "Reserva agregada correctamente"}
 
         except Exception as e:
@@ -65,13 +57,17 @@ class ReservasController:
         
     def listar_reservas(self):
         try:
-            
             return self.model.list_reservations()
-            
-            
         except Exception as e:
              print(e)
              return {"status": "error", "message": str(e)}
+    
+    def listar_reservas_por_hoy(self):
+        try:
+            return self.model.list_reservations_by_today()
+        except Exception as e:
+            print(e)
+            return {"status": "error", "message": str(e)}
          
     def  get_reserva(self, id_reserva):
         try:
@@ -79,9 +75,9 @@ class ReservasController:
         except Exception as e:
             print(e)
             return {"status": "error", "message": str(e)}
-    def eliminar_reserva(self, reserva_id):
+    def delete_reserva(self, reserva_id):
         try:
-            self.model.delete_reservation(reserva_id)
+            eliminar_reserva(reserva_id)
             return {"status": "success", "message": "Reserva eliminada correctamente"}
         except Exception as e:
             return {"status": "error", "message": str(e)}
@@ -113,28 +109,24 @@ class ReservasController:
             fecha_base = date(1900, 1, 1)
             dias_transcurridos = (checkin - fecha_base).days
             dias_transcurridos=dias_transcurridos+2 #equivalente a excel
-            print('dias_transcurridos',dias_transcurridos)
             # noches 
             noches = (checkout - checkin).days
-            print('noches',noches)
             # precio unitario
             if noches > 0:
-                print('inicio precio unitario')
                 precio_unitario = float(precio) // noches  # División entera para obtener un precio unitario entero
                 precio_unitario=int(precio_unitario)
-                print('fin precio unitario',precio_unitario)
             else:
                 precio_unitario=0
             #codigo 
             codigo = str(dias_transcurridos) + habitacion
-            print('codigo',codigo)
             
             #agregar atributos calculados al diccionario
             reserva_data["codigo"] = codigo
             reserva_data["noches"] = noches
             reserva_data["precio_unitario"] = precio_unitario
             #actualizar reserva
-            self.model.update_reservation(reserva_data)
+            # self.model.update_reservation(reserva_data)
+            actualizar_reserva(reserva_data)
             return True
         except Exception as e:
             print(e)
@@ -147,9 +139,40 @@ class ReservasController:
             print(e)
             return {"status": "error", "message": str(e)}
     
-    def listar_reservas_por_fecha( inicio, fin):
+    def listar_reservas_por_fecha(self, inicio, fin):
         try:
             return filtrar_reservas_por_fecha(inicio, fin)
+        except Exception as e:
+            print(e)
+            return {"status": "error", "message": str(e)}
+    
+    def obtener_ocupaciones_por_fecha(self, inicio, fin):
+        try:
+            # Filtrar las reservas en el rango de fechas especificado
+            reservas = filtrar_reservas_por_fecha(inicio, fin)
+          
+            ocupaciones = {}
+            for reserva in reservas:
+                habitacion_id = int(reserva.habitacion)
+                check_in = reserva.check_in
+                check_out = reserva.check_out
+                cliente = f"{reserva.nombre} {reserva.apellido}"
+                pagado = reserva.estado2 == 'Pagado'
+
+                # Asegurar que la habitación exista en el diccionario
+                if habitacion_id not in ocupaciones:
+                    ocupaciones[habitacion_id] = {}
+
+                # Generar fechas desde check_in hasta el día anterior a check_out
+                fecha_actual = check_in
+                while fecha_actual < check_out:
+                    ocupaciones[habitacion_id][fecha_actual.strftime("%Y-%m-%d")] = {
+                        "cliente": cliente,
+                        "pagado": pagado
+                    }
+                    fecha_actual += timedelta(days=1)
+
+            return ocupaciones
         except Exception as e:
             print(e)
             return {"status": "error", "message": str(e)}
