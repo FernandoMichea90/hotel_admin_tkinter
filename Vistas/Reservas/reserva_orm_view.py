@@ -9,7 +9,7 @@ from PIL import Image, ImageTk
 from Vistas.Reservas.edit_reserva import editar_reserva
 
 
-NUM_DIAS = 7  # Número de días por bloque
+NUM_DIAS = 4  # Número de días por bloque
 
 class ReservaOrmView:
     def __init__(self,master):
@@ -254,13 +254,16 @@ class ReservaOrmView:
                     
         # Crear encabezados de columnas (fechas)
         tk.Label(canvas_frame, text="Habitación", borderwidth=1, relief="solid", width=15,height=2).grid(row=0, column=0)
+        columna_final=NUM_DIAS+1
         for col, fecha in enumerate(fechas, start=1):
             tk.Label(canvas_frame, text=fecha, borderwidth=1, relief="solid", width=35,height=2).grid(row=0, column=col)
+        tk.Label(canvas_frame, text="Habitación", borderwidth=1, relief="solid", width=15,height=2).grid(row=0, column=columna_final)
 
+        
         # Rellenar filas con habitaciones y ocupaciones
         for row, habitacion in enumerate(habitaciones, start=1):
             # Columna de habitación
-            tk.Label(canvas_frame, text=f"Habitación {habitacion}", borderwidth=1, relief="solid", width=15,height=2).grid(row=row, column=0)
+            tk.Label(canvas_frame, text=f"{habitacion}", borderwidth=1, relief="solid", width=15,height=2).grid(row=row, column=0)
             # Columnas de ocupación
             for col, fecha in enumerate(fechas, start=1):
                 ocupacion = ocupaciones.get(habitacion, {}).get(fecha, "")  # Obtener cliente o vacío
@@ -279,6 +282,8 @@ class ReservaOrmView:
                     label.image = _photo  # Esto mantiene la referencia
                 else:
                     tk.Label(canvas_frame, text="", borderwidth=1, relief="solid", width=35,height=2).grid(row=row, column=col,sticky="nsew")
+            tk.Label(canvas_frame, text=f"{habitacion}", borderwidth=1, relief="solid", width=15,height=2).grid(row=row, column=columna_final)
+
                 
 
     def update_week_table(self, days):

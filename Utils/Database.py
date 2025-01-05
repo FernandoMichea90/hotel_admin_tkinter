@@ -8,3 +8,4 @@ DATABASE_URL = "mysql+mysqlconnector://root:123@localhost/hotel_ecomusic"
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+db=SessionLocal()

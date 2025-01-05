@@ -4,16 +4,29 @@ from tkinter import ttk
 from Controller.gasto_controller import crear_gasto, listar_gastos, eliminar_gasto, actualizar_gasto
 from Controller.categoria_controller import listar_categorias
 from Utils.Database import SessionLocal
+from Vistas.Categorias_Gastos.Categorias_Gastos import Categorias_Vista
 
 class VistaGasto:
     def __init__(self, master):
         
         self.master = master
+        self.master.focus_set()  # Establecer el foco en la ventana de configuración
+        self.master.bind("<Control-c>", lambda event: self.abrir_configuracion())
         self.frame_padre = tk.Frame(self.master, padx=10, pady=10)
         self.frame_padre.pack(fill="both", expand=True)
 
         # Crear una nueva sesión con la base de datos
         self.db = SessionLocal()
+        
+        # frame para titulo y boton configuracion
+        self.frame_titulo = tk.Frame(self.frame_padre)
+        self.frame_titulo.pack(fill="x", pady=10)
+        # Titulo
+        self.titulo = tk.Label(self.frame_titulo, text="Gestión de Gastos", font=("Arial", 15))
+        self.titulo.pack(side="left")
+        # Boton Configuracion
+        self.configuracion_btn = tk.Button(self.frame_titulo, text="Configuración", command=self.abrir_configuracion)
+        self.configuracion_btn.pack(side="right")
 
         # Frame para Información del Gasto y Botones
         self.frame_info_y_botones = tk.Frame(self.frame_padre)
@@ -34,7 +47,7 @@ class VistaGasto:
         self.label_categoria.grid(row=1, column=0, sticky="w")
         
         # Cargar categorías desde la base de datos
-        self.categorias = listar_categorias(self.db)
+        self.categorias = listar_categorias()
         self.categorias_nombres = [categoria.nombre for categoria in self.categorias]
 
         self.categoria_combobox = ttk.Combobox(self.info_gasto_frame, values=self.categorias_nombres)
@@ -106,12 +119,11 @@ class VistaGasto:
         self.treeview.heading("Método de Pago", text="Método de Pago")
         self.treeview.heading("Proveedor", text="Proveedor")
         self.treeview.heading("Notas", text="Notas")
-
-        # Mostrar el Treeview
+        
         self.treeview.pack(fill="both", expand=True)
 
-      
-
+    
+   
     def agregar_gasto(self):
         descripcion = self.descripcion_entry.get()
         categoria_nombre = self.categoria_combobox.get()
@@ -138,6 +150,17 @@ class VistaGasto:
         nuevo_gasto = crear_gasto(self.db, descripcion, categoria_id, monto, fecha, metodo_pago, proveedor, notas)
         messagebox.showinfo("Éxito", f"Gasto '{nuevo_gasto.descripcion}' agregado correctamente.")
         self.limpiar_campos()
+
+    def abrir_configuracion(self):
+        # abrir ventana de configuracion de categorias en una nueva ventana
+        # limpiar la ventana principal
+        for widget in self.frame_padre.winfo_children():
+            widget.destroy()
+        # crear nuevo frame
+        self.frame_configuracion = tk.Frame(self.frame_padre, padx=10, pady=10)
+        self.frame_configuracion.pack(fill="both", expand=True)
+        Categorias_Vista(self.frame_configuracion)
+        
 
     def listar_gastos(self):
         # Limpiar las filas existentes en el Treeview

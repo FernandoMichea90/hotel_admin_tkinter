@@ -19,7 +19,7 @@ class App(tk.Tk):
         super().__init__()
         self.title("Sistema de Reservas")
         self.geometry("800x600+0+0")
-
+    
         # Configuración de la ventana principal
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)  # La columna derecha será expansible
