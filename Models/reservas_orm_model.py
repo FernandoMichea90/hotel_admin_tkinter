@@ -12,9 +12,13 @@ from sqlalchemy import (
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import or_
+from Utils.Database import Base,db
+from datetime import datetime, timedelta
 
 
-Base = declarative_base()
+session=db;
+
+
 
 class Reserva(Base):
     __tablename__ = 'reservas_tkinter'  # Nombre de la tabla en la base de datos
@@ -55,9 +59,6 @@ class Reserva(Base):
 DATABASE_URL = "mysql+mysqlconnector://root:123@localhost/hotel_ecomusic"
 engine = create_engine(DATABASE_URL)
 
-# Crear una sesión
-Session = sessionmaker(bind=engine)
-session = Session()
 
 # Funciones del modelo
 def listar_reservas():
@@ -85,3 +86,39 @@ def actualizar_reserva(reserva_data):
 def eliminar_reserva(reserva_id):
     session.query(Reserva).filter(Reserva.id == reserva_id).delete()
     session.commit()
+
+
+def obtener_datos_del_mes():
+    # Obtener la fecha actual
+    fecha_actual = datetime.now()
+
+    # Obtener el primer y último día del mes actual
+    inicio_mes = fecha_actual.replace(day=1)
+    fin_mes = fecha_actual.replace(day=28) + timedelta(days=4)  # esto asegura que la fecha sea en el mes siguiente
+    fin_mes = fin_mes - timedelta(days=fin_mes.day)  # obtener el último día del mes
+
+    # Filtrar reservas de este mes por check_in
+    reservas_mes = session.query(Reserva).filter(
+        Reserva.check_in >= inicio_mes,
+        Reserva.check_in <= fin_mes
+    ).all()
+
+    # Calcular la suma de precios del mes
+    total_precio = sum(reserva.precio for reserva in reservas_mes)
+
+    # Calcular el total de noches en todas las reservas
+    total_noches = sum(reserva.noches for reserva in reservas_mes)
+
+    # Calcular el promedio de ventas por noche
+    if total_noches > 0:
+        promedio_ventas_por_noche = total_precio / total_noches
+    else:
+        promedio_ventas_por_noche = 0
+
+    # Devolver los resultados
+    return {
+        "total_reservas": len(reservas_mes),
+        "total_precio": total_precio,
+        "total_noches": total_noches,
+        "promedio_ventas_por_noche": promedio_ventas_por_noche
+    }

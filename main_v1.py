@@ -8,6 +8,7 @@ from Vistas.Reservas.edit_reserva import editar_reserva
 from Vistas.Reservas.reserva_orm_view import ReservaOrmView
 from Utils.Database import Base, engine
 from Vistas.Gastos.gastos_view import VistaGasto
+from Vistas.Home.HomeView import HomeView
 
 
 Base.metadata.create_all(bind=engine)
@@ -118,13 +119,7 @@ class App(tk.Tk):
         for widget in self.content_frame.winfo_children():
             widget.destroy()  # Limpiar el contenido actual
 
-        label = tk.Label(
-            self.content_frame,
-            text="Bienvenido al Sistema de Reservas",
-            font=("Arial", 18),
-            bg="white",
-        )
-        label.pack(expand=True)
+        HomeView(self.content_frame)
 
 
     def mostrar_reservas(self):

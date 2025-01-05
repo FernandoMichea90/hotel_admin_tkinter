@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 from Models.reservas_model import ReservasModel
-from Models.reservas_orm_model import listar_reservas, filtrar_reservas_por_fecha, agregar_reserva,actualizar_reserva,eliminar_reserva
+from Models.reservas_orm_model import listar_reservas, filtrar_reservas_por_fecha, agregar_reserva,actualizar_reserva,eliminar_reserva, obtener_datos_del_mes
 class ReservasController:
     def __init__(self):
         self.model = ReservasModel()
@@ -173,6 +173,13 @@ class ReservasController:
                     fecha_actual += timedelta(days=1)
 
             return ocupaciones
+        except Exception as e:
+            print(e)
+            return {"status": "error", "message": str(e)}
+        
+    def obtener_datos_del_mes(self):
+        try:
+            return obtener_datos_del_mes()
         except Exception as e:
             print(e)
             return {"status": "error", "message": str(e)}

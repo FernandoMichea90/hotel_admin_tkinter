@@ -154,12 +154,10 @@ class VistaGasto:
     def abrir_configuracion(self):
         # abrir ventana de configuracion de categorias en una nueva ventana
         # limpiar la ventana principal
-        for widget in self.frame_padre.winfo_children():
+        for widget in self.master.winfo_children():
             widget.destroy()
         # crear nuevo frame
-        self.frame_configuracion = tk.Frame(self.frame_padre, padx=10, pady=10)
-        self.frame_configuracion.pack(fill="both", expand=True)
-        Categorias_Vista(self.frame_configuracion)
+        Categorias_Vista(self.master)
         
 
     def listar_gastos(self):
