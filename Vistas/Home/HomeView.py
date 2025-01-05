@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 from Controller.reserva_controller import obtener_datos_del_mes
+from Controller.gasto_controller import obtener_gastos_mes
 
 class HomeView:
     def __init__(self, master):
@@ -29,6 +30,18 @@ class HomeView:
         self.crear_labelframe(self.ingresos_frame, "Pernoctaciones", "0", "total_noches")
         self.crear_labelframe(self.ingresos_frame, "Promedio Ventas/Noche", "0", "promedio_ventas_por_noche")
 
+          # LabelFrame para "Ingresos"
+        self.gastos_frame = tk.LabelFrame(self.dashboard_frame, text="Resumen Gastos", padx=10, pady=10)
+        self.gastos_frame.pack(fill="x",side="top", padx=10, pady=10)
+
+       
+
+        # Crear LabelFrames para cada sección
+        self.crear_labelframe(self.gastos_frame, "Total Mes", "0", "total_gastos_mes")
+     
+
+
+
         # Llamada inicial para mostrar los datos
         self.mostrar_datos_mes()
 
@@ -49,9 +62,16 @@ class HomeView:
     def mostrar_datos_mes(self):
         # Llamar al controller para obtener los resultados
         resultados = obtener_datos_del_mes()
-
+        resultados_gastos = obtener_gastos_mes()
+        
+        print(resultados_gastos['total_gastos_mes'])
+        if resultados_gastos['gastos_por_categoria']:
+            for gasto in resultados_gastos['gastos_por_categoria']:
+                print(gasto['categoria'], gasto['total'])
+            
         # Actualizar las etiquetas con los resultados
         self.resultado_total_reservas.config(text=f"{resultados['total_reservas']}")
         self.resultado_total_precio.config(text=f"{self.formatear_moneda(resultados['total_precio'])}")
         self.resultado_total_noches.config(text=f"{resultados['total_noches']}")
         self.resultado_promedio_ventas_por_noche.config(text=f"{self.formatear_moneda(resultados['promedio_ventas_por_noche'])}")
+        self.resultado_total_gastos_mes.config(text=f"{self.formatear_moneda(resultados_gastos['total_gastos_mes'])}")

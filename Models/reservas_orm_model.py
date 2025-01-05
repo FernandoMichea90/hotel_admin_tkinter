@@ -56,8 +56,6 @@ class Reserva(Base):
 
 
 # Configuración de SQLAlchemy con MySQL
-DATABASE_URL = "mysql+mysqlconnector://root:123@localhost/hotel_ecomusic"
-engine = create_engine(DATABASE_URL)
 
 
 # Funciones del modelo

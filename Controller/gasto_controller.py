@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from Models.gastos_orm_model import Gasto
 
+
 def crear_gasto(db: Session, descripcion, categoria_id, monto, fecha, metodo_pago, proveedor, notas):
     nuevo_gasto = Gasto(
         descripcion=descripcion,
@@ -31,3 +32,9 @@ def actualizar_gasto(db: Session, gasto_id: int, **kwargs):
         for key, value in kwargs.items():
             setattr(gasto, key, value)
         db.commit()
+def obtener_gastos_mes():
+    try:
+        return Gasto.obtener_gastos_mes()
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
