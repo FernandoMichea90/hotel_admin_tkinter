@@ -30,12 +30,15 @@ class HomeView:
         self.crear_labelframe(self.ingresos_frame, "Pernoctaciones", "0", "total_noches")
         self.crear_labelframe(self.ingresos_frame, "Promedio Ventas/Noche", "0", "promedio_ventas_por_noche")
 
-        # LabelFrame para "Ingresos"
-        self.gastos_frame = tk.LabelFrame(self.dashboard_frame, text="Resumen Gastos", padx=10, pady=10)
+        # LabelFrame para "Gastos"
+        self.gastos_frame = tk.Frame(self.dashboard_frame, padx=10, pady=10)
         self.gastos_frame.pack(fill="x", side="top", padx=10, pady=10)
 
         # Crear LabelFrames para cada sección
         self.crear_labelframe(self.gastos_frame, "Total Mes", "0", "total_gastos_mes")
+        self.gastos_grafico_frame = tk.LabelFrame(self.dashboard_frame, text="data", )
+        self.gastos_grafico_frame.pack(fill="both", side="top")
+        
 
         # Llamada inicial para mostrar los datos
         self.mostrar_datos_mes()
@@ -59,7 +62,6 @@ class HomeView:
         resultados = obtener_datos_del_mes()
         resultados_gastos = obtener_gastos_mes()
 
-        print(resultados_gastos['total_gastos_mes'])
         
         if resultados_gastos['gastos_por_categoria']:
             categorias = []
@@ -83,10 +85,10 @@ class HomeView:
     def crear_grafico_barras(self, categorias, totales):
         """Crea un gráfico de barras en Tkinter utilizando Matplotlib."""
         # Crear figura y ejes
-        fig, ax = plt.subplots(figsize=(6, 4))
+        fig, ax = plt.subplots(figsize=(3, 2))
 
         # Crear el gráfico de barras
-        ax.bar(categorias, totales, color='skyblue')
+        ax.bar(categorias, totales)
 
         # Agregar etiquetas y título
         ax.set_xlabel('Categorías')
@@ -94,6 +96,6 @@ class HomeView:
         ax.set_title('Gastos por Categoría')
 
         # Colocar el gráfico en el interfaz de Tkinter
-        canvas = FigureCanvasTkAgg(fig, master=self.gastos_frame)  # Gastos frame para mostrar el gráfico
-        canvas.get_tk_widget().pack(fill="both", expand=True, pady=10)
+        canvas = FigureCanvasTkAgg(fig, master=self.gastos_grafico_frame)  # Gastos frame para mostrar el gráfico
+        canvas.get_tk_widget().pack(fill="both", expand=True)
         canvas.draw()

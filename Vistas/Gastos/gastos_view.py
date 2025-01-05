@@ -3,7 +3,6 @@ from tkinter import messagebox
 from tkinter import ttk
 from Controller.gasto_controller import crear_gasto, listar_gastos, eliminar_gasto, actualizar_gasto
 from Controller.categoria_controller import listar_categorias
-from Utils.Database import SessionLocal
 from Vistas.Categorias_Gastos.Categorias_Gastos import Categorias_Vista
 
 class VistaGasto:
@@ -15,9 +14,7 @@ class VistaGasto:
         self.frame_padre = tk.Frame(self.master, padx=10, pady=10)
         self.frame_padre.pack(fill="both", expand=True)
 
-        # Crear una nueva sesión con la base de datos
-        self.db = SessionLocal()
-        
+        # Crear una nueva sesión con la base de datos        
         # frame para titulo y boton configuracion
         self.frame_titulo = tk.Frame(self.frame_padre)
         self.frame_titulo.pack(fill="x", pady=10)
@@ -147,7 +144,7 @@ class VistaGasto:
             messagebox.showerror("Error", str(e))
             return
 
-        nuevo_gasto = crear_gasto(self.db, descripcion, categoria_id, monto, fecha, metodo_pago, proveedor, notas)
+        nuevo_gasto = crear_gasto( descripcion, categoria_id, monto, fecha, metodo_pago, proveedor, notas)
         messagebox.showinfo("Éxito", f"Gasto '{nuevo_gasto.descripcion}' agregado correctamente.")
         self.limpiar_campos()
 
@@ -166,7 +163,7 @@ class VistaGasto:
             self.treeview.delete(row)
         
         # Obtener los gastos desde la base de datos
-        gastos = listar_gastos(self.db)
+        gastos = listar_gastos()
         
         # Insertar los datos en el Treeview
         for gasto in gastos:
@@ -185,7 +182,7 @@ class VistaGasto:
         selected_gasto = self.gastos_listbox.curselection()
         if selected_gasto:
             gasto_id = self.gastos_listbox.get(selected_gasto[0]).split(" - ")[0]  # Se asume que el ID es la primera parte del string
-            gasto = eliminar_gasto(self.db, int(gasto_id))
+            gasto = eliminar_gasto( int(gasto_id))
             messagebox.showinfo("Éxito", f"Gasto con ID {gasto_id} eliminado.")
             self.listar_gastos()
 

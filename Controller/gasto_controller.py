@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from Models.gastos_orm_model import Gasto
+from Utils.Database import db
 
-
-def crear_gasto(db: Session, descripcion, categoria_id, monto, fecha, metodo_pago, proveedor, notas):
+def crear_gasto( descripcion, categoria_id, monto, fecha, metodo_pago, proveedor, notas):
     nuevo_gasto = Gasto(
         descripcion=descripcion,
         categoria_id=categoria_id,
@@ -17,16 +17,16 @@ def crear_gasto(db: Session, descripcion, categoria_id, monto, fecha, metodo_pag
     db.refresh(nuevo_gasto)
     return nuevo_gasto
 
-def listar_gastos(db: Session):
+def listar_gastos():
     return db.query(Gasto).all()
 
-def eliminar_gasto(db: Session, gasto_id: int):
+def eliminar_gasto( gasto_id: int):
     gasto = db.query(Gasto).get(gasto_id)
     if gasto:
         db.delete(gasto)
         db.commit()
 
-def actualizar_gasto(db: Session, gasto_id: int, **kwargs):
+def actualizar_gasto( gasto_id: int, **kwargs):
     gasto = db.query(Gasto).get(gasto_id)
     if gasto:
         for key, value in kwargs.items():
