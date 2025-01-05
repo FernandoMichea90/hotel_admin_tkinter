@@ -6,6 +6,12 @@ from Vistas.Pasajeros.crear import crear_reservas
 from Vistas.Reservas.reserva_view import  ReservaView
 from Vistas.Reservas.edit_reserva import editar_reserva
 from Vistas.Reservas.reserva_orm_view import ReservaOrmView
+from Utils.Database import Base, engine
+
+
+
+Base.metadata.create_all(bind=engine)
+
 
 # Clase para la aplicación principal
 class App(tk.Tk):
