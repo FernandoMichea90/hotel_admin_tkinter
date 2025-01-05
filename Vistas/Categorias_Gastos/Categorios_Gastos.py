@@ -9,7 +9,7 @@ from Controller.gasto_controller import listar_gastos
 Session = sessionmaker(bind=engine)
 db = Session()
 
-class MainView:
+class gastosApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Gestión de Gastos")
@@ -43,7 +43,3 @@ class MainView:
             self.cargar_categorias()
             self.categoria_entry.delete(0, END)
 
-if __name__ == "__main__":
-    root = Tk()
-    app = MainView(root)
-    root.mainloop()
