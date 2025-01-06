@@ -179,12 +179,19 @@ class VistaGasto:
             ))
 
     def eliminar_gasto(self):
-        selected_gasto = self.gastos_listbox.curselection()
+        #gastos seleccionados 
+        selected_gasto = self.treeview.selection()
         if selected_gasto:
-            gasto_id = self.gastos_listbox.get(selected_gasto[0]).split(" - ")[0]  # Se asume que el ID es la primera parte del string
+            gasto_id = self.treeview.item(selected_gasto)['values'][0]
             gasto = eliminar_gasto( int(gasto_id))
             messagebox.showinfo("Éxito", f"Gasto con ID {gasto_id} eliminado.")
             self.listar_gastos()
+        # selected_gasto = self.gastos_listbox.curselection()
+        # if selected_gasto:
+        #     gasto_id = self.gastos_listbox.get(selected_gasto[0]).split(" - ")[0]  # Se asume que el ID es la primera parte del string
+        #     gasto = eliminar_gasto( int(gasto_id))
+        #     messagebox.showinfo("Éxito", f"Gasto con ID {gasto_id} eliminado.")
+        #     self.listar_gastos()
 
     def limpiar_campos(self):
         self.descripcion_entry.delete(0, tk.END)
