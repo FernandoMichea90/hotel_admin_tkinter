@@ -13,8 +13,10 @@ class MyScrollableCardFrame(ctk.CTkScrollableFrame):
         self.reserva_view = reserva_view
         self.values = values
         self.cards = []
-        
+        print("llego hasta aca dos")
+
         for i, value in enumerate(self.values):
+            print("llego hasta aca uno coma 5")
             # Crear un "card" como un CTkFrame
             card = customtkinter.CTkFrame(self, corner_radius=20, fg_color="white")
             card.pack(fill="both",expand=True, padx=10, pady=(10, 0))
@@ -23,12 +25,14 @@ class MyScrollableCardFrame(ctk.CTkScrollableFrame):
             left_frame.pack(side="left", fill="y", padx=(20,0), pady=0)  # Eliminar margenes
             #Crear un right frame
             right_frame = tk.Frame(card, bg="white")
+            print("llego hasta aca tres")
+
             right_frame.pack(side="right", fill="y", padx=(0,20), pady=0)
             # Crera un centro frame
             center_frame = tk.Frame(card, bg="white")
             center_frame.pack(side="right", fill="y", padx=(0,20), pady=0)
-            check_in = value['check_in']
-            check_out = value['check_out']
+            check_in = value.check_in
+            check_out = value.check_out
             # Verifica si check_in no es None antes de aplicar strftime
             if check_in is not None:
                 check_in = check_in.strftime("%d/%m/%Y")
@@ -38,19 +42,25 @@ class MyScrollableCardFrame(ctk.CTkScrollableFrame):
                 check_out = check_out.strftime("%d/%m/%Y")
           
             # Agregar un Label dentro del Frame izquierdo
-            nombre_cliente = value['nombre'].strip() + " " + value['apellido'].strip()
+            if value.nombre is not None:
+                nombre_cliente = value.nombre.strip() 
+            if value.apellido is not None:
+                apellido_cliente = value.apellido.strip()
+            
+            nombre_cliente = nombre_cliente.strip() + " " + apellido_cliente.strip()
             label3 = customtkinter.CTkLabel(left_frame, text=nombre_cliente,text_color="black",font=("Arial", 18, "bold"),height=22)
             label3.pack(side="top", padx=10, pady=(10,2),fill="x")
             if check_in is not None and check_out is not None:
                 label_fecha = customtkinter.CTkLabel(left_frame, text=f"{check_in} - {check_out}",text_color="gray",font=("Arial", 10, "bold"),anchor="w",height=12)
                 label_fecha.pack(side="top", padx=10, pady=(3,3),fill="x", expand=True)
             # Agregar texto dentro de la tarjeta
-            label2 = customtkinter.CTkLabel(left_frame, text=value['codigo'],text_color='gray',font=("Arial",10,"normal"),anchor="w",height=10)
+            label2 = customtkinter.CTkLabel(left_frame, text=value.codigo,text_color='gray',font=("Arial",10,"normal"),anchor="w",height=10)
             label2.pack(side="top", padx=10,expand=True,fill="x")
-            label4 = customtkinter.CTkLabel(left_frame, text=value['habitacion'],text_color='blue',font=("Arial",10,"normal"),anchor="w",height=11) 
+            label4 = customtkinter.CTkLabel(left_frame, text=value.habitacion,text_color='blue',font=("Arial",10,"normal"),anchor="w",height=11) 
             label4.pack(side="top", padx=10, pady=(0,10), expand=True,fill="x")
            # Agregar botón "Ver" con efecto hover invertido
             # Agregar un botón "Ver" con efecto hover usando un borde transparente
+            print("llego hasta aca dos")
             button = customtkinter.CTkButton(
                 right_frame,
                 text="Ver",
@@ -105,18 +115,18 @@ class MyScrollableCardFrame(ctk.CTkScrollableFrame):
  
         # for widget in self.master.winfo_children():
         #     widget.destroy()
-        editar_reserva(self,value['id'])
+        editar_reserva(self,value.id)
                 
     def show_reserva(self, value):
             self.reserva_view.clean()  # Llama al método clean en la instancia correcta
             print(value)
-            self.reserva_view.mostrar_reserva(value['id'])
+            self.reserva_view.mostrar_reserva(value.id)
             
     def borra_reserva(self, value):
         self.reserva_view.borra_reserva(value)
 
 class ReservaView:
-    def __init__(self, master):
+    def __init__(self, master=None):
         self.master = master
         self.frame = customtkinter.CTkFrame(master,fg_color="white")
         self.frame.pack(fill="both", expand=True)  # Usamos pack
@@ -162,7 +172,7 @@ class ReservaView:
 
         )
         button.pack(side="right", padx=10)
-        
+        print("Llego hasta aqui")
         reserva_controller=ReservasController()   
         self.scrollable_card_frame = MyScrollableCardFrame(self.content_frame, title="Reservas", values=reserva_controller.listar_reservas_por_hoy(),reserva_view=self)
         self.scrollable_card_frame.pack(fill="both", expand=True, padx=20, pady=20)
@@ -395,13 +405,13 @@ class ReservaView:
     def borra_reserva(self, value):
         respuesta= messagebox.askyesno(
             "Confirmación requerida",
-            f"¿Estás seguro de que deseas eliminar la reserva con ID {value['id']}? Esta acción no se puede deshacer."
+            f"¿Estás seguro de que deseas eliminar la reserva con ID {value.id}? Esta acción no se puede deshacer."
         )
         if respuesta:
-            self.ReservaController.eliminar_reserva(value['id'])
+            self.ReservaController.eliminar_reserva(value.id)
             messagebox.showinfo(
                 "Reserva Eliminada",
-                f"La reserva con ID {value['id']} ha sido eliminada."
+                f"La reserva con ID {value.id} ha sido eliminada."
             )
             self.clean()
             self.mostrar_reservas()

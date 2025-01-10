@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 from Models.reservas_model import ReservasModel
-from Models.reservas_orm_model import listar_reservas, filtrar_reservas_por_fecha, agregar_reserva,actualizar_reserva,eliminar_reserva, obtener_datos_del_mes
+from Models.reservas_orm_model import listar_reservas, filtrar_reservas_por_fecha, agregar_reserva,actualizar_reserva,eliminar_reserva, obtener_datos_del_mes , list_reservations_by_today
 class ReservasController:
     def __init__(self):
         self.model = ReservasModel()
@@ -64,7 +64,7 @@ class ReservasController:
     
     def listar_reservas_por_hoy(self):
         try:
-            return self.model.list_reservations_by_today()
+            return list_reservations_by_today()
         except Exception as e:
             print(e)
             return {"status": "error", "message": str(e)}
@@ -84,6 +84,7 @@ class ReservasController:
         
     def actualizar_reserva(self,reserva_id, nombre, apellido, correo, celular, direccion, rut_pasaporte, pais, checkin, checkout, habitacion, adultos, ninos, precio, procedencia, metodo_pago, dte, estado_pago):
         try:
+            print('actualizar reserva' +estado_pago)
             reserva_data = {
                 "id": reserva_id,
                 "nombre": nombre,
@@ -102,7 +103,7 @@ class ReservasController:
                 "procedencia": procedencia,
                 "pago": metodo_pago,
                 "tipo_documento": dte,
-                "estado_pago": estado_pago
+                "estado2": estado_pago
             }
             # agregar atributos calculados: codigo, noches, precio_unitario
             # dias transcurridos

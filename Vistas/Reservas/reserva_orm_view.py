@@ -192,7 +192,7 @@ class ReservaOrmView:
         button_atras = ctk.CTkButton(self.frame_header, text="⬅️", font=("Arial", 12),command=lambda: self.update_week_table(-NUM_DIAS))
         button_atras.pack(side="right", padx=10)
         
-        self.start_date = datetime.now()  # Fecha inicial de la tabla
+        self.start_date = datetime.now()-timedelta(days=1)  # Fecha inicial de la tabla
         self.create_week_table(self.start_date)
         
         
