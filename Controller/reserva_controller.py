@@ -62,9 +62,10 @@ class ReservasController:
              print(e)
              return {"status": "error", "message": str(e)}
     
-    def listar_reservas_por_hoy(self):
+    def listar_reservas_por_hoy(self,fecha_actual):
         try:
-            return list_reservations_by_today()
+            print(fecha_actual)
+            return list_reservations_by_today(fecha_actual)
         except Exception as e:
             print(e)
             return {"status": "error", "message": str(e)}

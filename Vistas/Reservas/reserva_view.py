@@ -2,14 +2,14 @@ import customtkinter
 import tkinter as tk
 from tkinter import ttk  # Importar ttk para usar el componente de Tabs
 import customtkinter as ctk
-from datetime import date
+from datetime import date,datetime
 from Controller.reserva_controller import ReservasController
 from Vistas.Pasajeros.crear import crear_reservas
 from tkinter import messagebox
 from Vistas.Reservas.edit_reserva import editar_reserva
 class MyScrollableCardFrame(ctk.CTkScrollableFrame):
     def __init__(self, master, title, values,reserva_view):
-        super().__init__(master, label_text=title)
+        super().__init__(master)
         self.reserva_view = reserva_view
         self.values = values
         self.cards = []
@@ -134,6 +134,7 @@ class ReservaView:
         self.content_frame = tk.Frame(self.frame, bg="white")
         self.content_frame.pack(fill="both", expand=True)  # Usamos pack aquí también
         self.ReservaController= ReservasController()
+        self.fecha_actual = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
 
   
@@ -171,11 +172,80 @@ class ReservaView:
             command= lambda: crear_reservas(self=self)
 
         )
-        button.pack(side="right", padx=10)
-        print("Llego hasta aqui")
+        # crear frame para  botones y hoy 
+        btn_atras_adelante_hoy_frame = tk.Frame(self.content_frame, bg="white")
+        btn_atras_adelante_hoy_frame.pack(fill="x", pady=0, padx=0)  # Usamos pack
+        # Botón "Atrás"
+        button_atras = ctk.CTkButton(
+            btn_atras_adelante_hoy_frame,
+            text="Atrás",
+            font=("Arial", 18),
+            fg_color="#4CAF50",
+            hover_color="#45a049",
+            width=100,
+            height=40,
+            border_width=0,
+            corner_radius=10,
+            text_color="#ffffff",
+            command= lambda: self.avanzar_retroceder_dia(-1)
+        )
+        button_atras.pack(side="left", padx=10)
+        # crear frame para label dentro de btn_atras_adelante_hoy_frame
+        
+        centro_frame = tk.Frame(btn_atras_adelante_hoy_frame, bg="white")
+        centro_frame.pack(side="left", fill="x",expand=True, padx=0, pady=0)  # Usamos pack
+        
+        
+        # fecha actual al centro 
+        label = tk.Label(
+            centro_frame,
+            text=self.fecha_actual.strftime("%d/%m/%Y"),
+            font=("Arial", 18),
+            bg="white",
+            fg="green",
+            padx=10,
+            pady=10
+        )
+        
+        label.pack(side="top", padx=10)
+        
+        # Botón "Adelante"
+        button_adelante = ctk.CTkButton(
+            btn_atras_adelante_hoy_frame,
+            text="Adelante",
+            font=("Arial", 18),
+            fg_color="#4CAF50",
+            hover_color="#45a049",
+            width=100,
+            height=40,
+            border_width=0,
+            corner_radius=10,
+            text_color="#ffffff",
+            command= lambda: self.avanzar_retroceder_dia(1)
+        )
+        button_adelante.pack(side="right", padx=10)
+        
         reserva_controller=ReservasController()   
-        self.scrollable_card_frame = MyScrollableCardFrame(self.content_frame, title="Reservas", values=reserva_controller.listar_reservas_por_hoy(),reserva_view=self)
+        array_reservas = reserva_controller.listar_reservas_por_hoy(self.fecha_actual)
+        print("array_reservas")
+        print(array_reservas)
+        print("--------------------")
+        for reserva in array_reservas:
+            print(reserva)
+        
+        self.scrollable_card_frame = MyScrollableCardFrame(self.content_frame, title="Reservas", values=reserva_controller.listar_reservas_por_hoy(self.fecha_actual),reserva_view=self)
         self.scrollable_card_frame.pack(fill="both", expand=True, padx=20, pady=20)
+    
+    # funcion para avanzar o retroceder un dia
+    def avanzar_retroceder_dia(self, dias):
+        #limpiar el contenido que esta dentro del scrollable_card_frame
+        for widget in self.scrollable_card_frame.winfo_children():
+            widget.destroy()
+        #obtener la nueva fecha 
+        self.fecha_actual += datetime.timedelta(days=dias)
+        self.scrollable_card_frame = MyScrollableCardFrame(self.content_frame, title="Reservas", values=self.ReservaController.listar_reservas_por_hoy(self.fecha_actual),reserva_view=self)
+                
+        
 
     def mostrar_reserva_uno(self, id_reserva):
         """Mostrar contenido del panel derecho para Reservas."""

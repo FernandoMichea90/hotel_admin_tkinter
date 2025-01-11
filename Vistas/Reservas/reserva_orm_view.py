@@ -85,12 +85,19 @@ class ReservaOrmView:
         self.table_frame = ctk.CTkFrame(self.frame_body,bg_color="purple")
         self.table_frame.pack(fill="both", expand=True, padx=10, pady=10)
         # Tabla para mostrar las reservas
-        self.tree = ttk.Treeview(self.table_frame, columns=("id", "codigo", "nombre", "check_in", "check_out"), show="headings", selectmode="browse")
+        self.tree = ttk.Treeview(self.table_frame, columns=("id", "codigo", "nombre", "check_in", "check_out", "habitacion", "estado", "precio", "transbank", "facturado", "tipo_documento", "folio_factura"), show="headings", selectmode="browse")
         self.tree.heading("id", text="ID")
         self.tree.heading("codigo", text="Código")
         self.tree.heading("nombre", text="Nombre")
         self.tree.heading("check_in", text="Check-In")
         self.tree.heading("check_out", text="Check-Out")
+        self.tree.heading("habitacion", text="Habitación")
+        self.tree.heading("estado", text="Estado")
+        self.tree.heading("precio", text="Precio")
+        self.tree.heading("transbank", text="Transbank")
+        self.tree.heading("facturado", text="Facturado")
+        self.tree.heading("tipo_documento", text="Tipo Documento")
+        self.tree.heading("folio_factura", text="Folio Factura")
 
         # Crear scrollbar vertical
         vsb = ttk.Scrollbar(self.table_frame, orient="vertical", command=self.tree.yview)
@@ -191,12 +198,28 @@ class ReservaOrmView:
         button_adelante.pack(side="right", padx=10)
         button_atras = ctk.CTkButton(self.frame_header, text="⬅️", font=("Arial", 12),command=lambda: self.update_week_table(-NUM_DIAS))
         button_atras.pack(side="right", padx=10)
+        button_calendario = ctk.CTkButton(self.frame_header, text="📆", font=("Arial", 12),command=lambda:self.date_selection(),width=10)
+        button_calendario.pack(side="right")
+        
+        #datepicker
+        self.date_picker = DateEntry(self.frame_header, font=("Arial", 12), date_pattern="dd-mm-yyyy")
+        self.date_picker.pack(side="right", padx=10)
+          # Asocia un evento onchange al DateEntry
+        self.date_picker.bind("<<DateEntrySelected>>", self.date_selection)
         
         self.start_date = datetime.now()-timedelta(days=1)  # Fecha inicial de la tabla
         self.create_week_table(self.start_date)
         
         
-    
+   
+    def date_selection(self,event=None):
+        #obtener la fecha seleccionada
+        date = self.date_picker.get_date()
+        #mostran en una ventana emergente
+        self.start_date = date
+        self.create_week_table(self.start_date)
+        
+        
     
     def create_week_table(self, start_date):
         for widget in self.frame_main_body.winfo_children():
@@ -295,11 +318,30 @@ class ReservaOrmView:
         # Limpiar la tabla antes de insertar nuevas reservas
         for row in self.tree.get_children():
             self.tree.delete(row)
-
-        # Insertar las reservas en la tabla
-        for reserva in reservas:
-            self.tree.insert("", tk.END, values=(reserva.id, reserva.codigo, f"{reserva.nombre} {reserva.apellido}", reserva.check_in, reserva.check_out))
-
+        # agregrar estilo a la tabla
+        style = ttk.Style()
+        style.configure("Treeview.Heading", font=("Arial", 10, "bold"))
+        style.configure("Oddrow", background="#f2f2f2") 
+        style.configure("Evenrow", background="white")
+        # estilo pago pendiente
+        style.configure("PagoPendiente", background="#ffbdb8")
+        
+        for i, reserva in enumerate(reservas, start=1):
+            if reserva.estado2 == "Pendiente":
+                tag = "PagoPendiente"
+            else:
+                if i % 2 == 0:
+                    tag = "Evenrow"
+                else:
+                    tag = "Oddrow"
+            facturado= "❌"
+            if reserva.facturado:
+                facturado = "✔️"
+            self.tree.insert("", tk.END, values=(reserva.id, reserva.codigo, f"{reserva.nombre} {reserva.apellido}", reserva.check_in, reserva.check_out, reserva.habitacion, reserva.estado2,reserva.precio,reserva.transbank, facturado,reserva.tipo_documento,reserva.folio_factura),tags=(tag,))
+        self.tree.tag_configure("Oddrow", background="#f2f2f2")
+        self.tree.tag_configure("Evenrow", background="white")
+        self.tree.tag_configure("PagoPendiente", background="#ffbdb8")
+       
     def filtrar_reservas(self):
         """Filtra las reservas por fecha de check-in y check-out."""
         inicio = self.entry_inicio.get().strip()
