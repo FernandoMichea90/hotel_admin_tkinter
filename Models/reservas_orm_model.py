@@ -87,12 +87,14 @@ def eliminar_reserva(reserva_id):
     session.query(Reserva).filter(Reserva.id == reserva_id).delete()
     session.commit()
 
-def list_reservations_by_today():
-    today = datetime.now()
-    # restar 1 día a la fecha actual
-    today = today - timedelta(days=1)
-    inicio_dia = today.replace(hour=0, minute=0, second=0, microsecond=0)
-    fin_dia = today.replace(hour=23, minute=59, second=59, microsecond=999999)
+def list_reservations_by_today(fecha_actual):
+    print("Listar reservas por hoy")
+    print(fecha_actual)
+    today = fecha_actual
+    inicio_dia = today.replace(hour=0, minute=0, second=0)
+    fin_dia = today.replace(hour=23, minute=59, second=59)
+    print(inicio_dia)
+    print(fin_dia)
     
     return session.query(Reserva).filter(
         Reserva.check_in >= inicio_dia,
