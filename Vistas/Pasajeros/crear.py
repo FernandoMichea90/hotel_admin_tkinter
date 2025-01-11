@@ -84,11 +84,11 @@ def crear_reservas(self):
     save_btn = ctk.CTkButton(
         step3, text="Guardar Reserva", cursor="hand2",
         font=("Arial", 12, "bold"), fg_color="green", hover_color="darkgreen",
-        text_color="white", command=lambda: guardar_reserva(campos_step1, campos_step2, campos_step3, controller)
+        text_color="white", command=lambda: guardar_reserva(campos_step1, campos_step2, campos_step3, controller,stepper)
     )
     save_btn.grid(row=len(campos_step3), column=0, columnspan=2, pady=20)
 
-def guardar_reserva(campos_step1, campos_step2, campos_step3, controller):
+def guardar_reserva(campos_step1, campos_step2, campos_step3, controller,stepper):
     """Función para recoger los datos y guardar la reserva."""
     # Recoger los datos del formulario
     reserva_data = {
@@ -120,5 +120,17 @@ def guardar_reserva(campos_step1, campos_step2, campos_step3, controller):
     # Mostrar mensaje al usuario
     if response["status"] == "success":
         messagebox.showinfo("Éxito", response["message"])
+        
+        # Limpiar los campos
+        for _, widget in campos_step1 + campos_step2 + campos_step3:
+            if isinstance(widget, (ctk.CTkEntry, ttk.Entry)):
+                widget.delete(0, tk.END)
+            elif isinstance(widget, ctk.CTkOptionMenu):
+                widget.set(widget._values[0])
+            elif isinstance(widget, ctk.CTkCheckBox):
+                widget.deselect()
+
+        # Volver al paso 1
+        stepper.select(0)
     else:
         messagebox.showerror("Error", response["message"])

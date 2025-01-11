@@ -149,7 +149,7 @@ def editar_reserva(self, reserva_id, frame=None,window=None,update_table=None):
     estado_pago_label = tk.Label(step3, text="Estado Pago", font=("Arial", 12), bg="white")
     estado_pago_label.grid(row=3, column=0, sticky="w", pady=5)
     estado_pago_entry.grid(row=3, column=1, sticky="w", padx=10, pady=5)
-    estado_pago_entry.set(reserva_data.estado_pago)
+    estado_pago_entry.set(reserva_data.estado2)
 
     # Botón para actualizar
     save_btn = ctk.CTkButton(
@@ -162,12 +162,22 @@ def editar_reserva(self, reserva_id, frame=None,window=None,update_table=None):
             pais_entry.get(), checkin_entry.get_date(), checkout_entry.get_date(),
             habitacion_entry.get(), adultos_entry.get(), ninos_entry.get(),
             precio_entry.get(), procedencia_entry.get(), metodo_pago_entry.get(),
-            dte_entry.get(), estado_pago_entry.get(),window,update_table
+            dte_entry.get(), estado_pago_entry.get(),window,update_table,self.content_frame
         )
     )
     save_btn.grid(row=4, columnspan=2, pady=20)
+    
+def get_parent_of_parent(widget):
+    # Get the first parent
+    first_parent = widget.winfo_parent()
+    # If there's a parent, get its parent
+    if first_parent:
+        parent_of_parent = widget.nametowidget(first_parent).winfo_parent()
+        if parent_of_parent:
+            return widget.nametowidget(parent_of_parent)
+    return None
 
-def actualizar_reserva(reserva_id, nombre, apellido, correo, celular, direccion, rut_pasaporte, pais, checkin, checkout, habitacion, adultos, ninos, precio, procedencia, metodo_pago, dte, estado_pago="Pendiente",window=None,update_table=None):
+def actualizar_reserva(reserva_id, nombre, apellido, correo, celular, direccion, rut_pasaporte, pais, checkin, checkout, habitacion, adultos, ninos, precio, procedencia, metodo_pago, dte, estado_pago="Pendiente",window=None,update_table=None,frame=None):
     """Actualizar los datos de una reserva existente."""
     
     # Imprimir los valores de las variables antes de enviarlas al controlador
@@ -200,5 +210,14 @@ def actualizar_reserva(reserva_id, nombre, apellido, correo, celular, direccion,
         if window:
             update_table()
             window.destroy()
+        else:
+            from Vistas.Reservas.reserva_view import ReservaView
+            #obtener frame padre 
+            frame_parent = get_parent_of_parent(frame)
+            for widget in frame_parent.winfo_children():
+                widget.destroy()  # Elimina todos los widgets del padre
+            rv = ReservaView(frame_parent)  # Crea una nueva instancia de ReservaView en el frame padre
+            rv.mostrar_reservas()
+            
     else:
         messagebox.showerror("Error", "No se pudo actualizar la reserva.")

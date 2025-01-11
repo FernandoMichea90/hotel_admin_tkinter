@@ -6,6 +6,13 @@ from Vistas.Pasajeros.crear import crear_reservas
 from Vistas.Reservas.reserva_view import  ReservaView
 from Vistas.Reservas.edit_reserva import editar_reserva
 from Vistas.Reservas.reserva_orm_view import ReservaOrmView
+from Utils.Database import Base, engine
+from Vistas.Gastos.gastos_view import VistaGasto
+from Vistas.Home.HomeView import HomeView
+
+
+Base.metadata.create_all(bind=engine)
+
 
 # Clase para la aplicación principal
 class App(tk.Tk):
@@ -13,7 +20,7 @@ class App(tk.Tk):
         super().__init__()
         self.title("Sistema de Reservas")
         self.geometry("800x600+0+0")
-
+    
         # Configuración de la ventana principal
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)  # La columna derecha será expansible
@@ -74,6 +81,13 @@ class App(tk.Tk):
         
         rv=ReservaView(self.content_frame)
         rv.mostrar_reserva(id)  
+    def mostrar_gastos(self):
+        """Mostrar contenido del panel derecho para Gastos."""
+        for widget in self.content_frame.winfo_children():
+            widget.destroy()
+
+        rv=VistaGasto(self.content_frame)
+        
     
     def configurar_menu(self):
         """Configurar botones del menú en el panel izquierdo."""
@@ -81,6 +95,7 @@ class App(tk.Tk):
             ("🏠 Home", self.mostrar_home),
             ("📋 Hoy", self.mostrar_reservas_dos),
             ("📅 Reservas", self.mostrar_orm_reservas),
+            ("💸 Gastos", self.mostrar_gastos)
             
         ]
 
@@ -104,13 +119,7 @@ class App(tk.Tk):
         for widget in self.content_frame.winfo_children():
             widget.destroy()  # Limpiar el contenido actual
 
-        label = tk.Label(
-            self.content_frame,
-            text="Bienvenido al Sistema de Reservas",
-            font=("Arial", 18),
-            bg="white",
-        )
-        label.pack(expand=True)
+        HomeView(self.content_frame)
 
 
     def mostrar_reservas(self):
@@ -275,8 +284,3 @@ class App(tk.Tk):
                 separator = tk.Label(breadcrumb_frame, text=">", font=("Arial", 12), bg="white", fg="green")
                 separator.pack(side="left", padx=5)
 
-
-# Ejecutar la aplicación
-if __name__ == "__main__":
-    app = App()
-    app.mainloop()
