@@ -33,7 +33,7 @@ class ReservaOrmView:
         button_reservas.pack(side="right", padx=10)
 
         # Crear frame body 
-        self.frame_body = ctk.CTkFrame(self.frame, corner_radius=10,bg_color="green")
+        self.frame_body = ctk.CTkFrame(self.frame, corner_radius=10)
         self.frame_body.pack(padx=10, pady=10, fill="both", side="top",expand=True)
     
         self.main_body()
@@ -42,7 +42,7 @@ class ReservaOrmView:
     
     def main_body(self):
         # Crear Frame Fechas 
-        self.frame_fechas = ctk.CTkFrame(self.frame_body,corner_radius=10,bg_color="green") 
+        self.frame_fechas = ctk.CTkFrame(self.frame_body,corner_radius=10) 
         self.frame_fechas.pack(padx=10, pady=10,side='top',fill='x')
         
         
@@ -65,7 +65,7 @@ class ReservaOrmView:
         self.btn_filtrar = ctk.CTkButton(self.frame_fechas, text="Filtrar", font=("Arial", 12),command=self.filtrar_reservas)
         self.btn_filtrar.pack(side="right",padx=10, pady=10)
         #crear frame para  buscar, editar y eliminar 
-        self.frame_botones = ctk.CTkFrame(self.frame_body,bg_color="green")
+        self.frame_botones = ctk.CTkFrame(self.frame_body)
         # crear input para buscar
         self.entry_buscar = ctk.CTkEntry(self.frame_botones, font=("Arial", 12))
         self.entry_buscar.pack(side="left", padx=10, pady=10)
@@ -143,7 +143,7 @@ class ReservaOrmView:
         edit_window = tk.Toplevel(self.master)
         edit_window.title("Editar Reserva")
         # crear frame para el contenido
-        frame_content_window = ctk.CTkFrame(edit_window, corner_radius=10, bg_color="white")
+        frame_content_window = ctk.CTkFrame(edit_window, corner_radius=10)
         frame_content_window.pack(padx=10, pady=10, fill="both", expand=True)
         # Llamar a la función para editar la reserva
         editar_reserva(self,int(values[0]), frame_content_window,edit_window,self.update_table)
@@ -187,7 +187,7 @@ class ReservaOrmView:
         self.frame_header = ctk.CTkFrame(self.frame_body,bg_color="pink")
         self.frame_header.pack(pady=10, padx=10, side="top", fill="x")
         #crear un frame para el body 
-        self.frame_main_body = ctk.CTkFrame(self.frame_body,bg_color="green")
+        self.frame_main_body = ctk.CTkFrame(self.frame_body)
         self.frame_main_body.pack(pady=10, padx=10, side="top", fill="both", expand=True)
         # Agregar un título a la vista
         label_titulo = ctk.CTkLabel(self.frame_header, text="Vista Semanal", font=("Arial", 14, "bold"), text_color="green")
