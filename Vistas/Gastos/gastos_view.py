@@ -106,9 +106,19 @@ class VistaGasto:
 
         # Tabla para mostrar los gastos usando Treeview
         self.treeview = ttk.Treeview(self.label_frame_lista, columns=("ID", "Descripción", "Categoría", "Monto", "Fecha", "Método de Pago", "Proveedor", "Notas"), show="headings")
+        # ajustar el ancho de las columnas 
+        self.treeview.column("ID", width=50, anchor="center")
+        self.treeview.column("Descripción", width=150)
+        self.treeview.column("Categoría", width=100)
+        self.treeview.column("Monto", width=100, anchor="center")
+        self.treeview.column("Fecha", width=100, anchor="center")
+        self.treeview.column("Método de Pago", width=100)
+        self.treeview.column("Proveedor", width=100)
+        self.treeview.column("Notas", width=100)
+        
         
         # Configurar las columnas de la tabla
-        self.treeview.heading("ID", text="ID")
+        self.treeview.heading("ID", text="ID", anchor="center")
         self.treeview.heading("Descripción", text="Descripción")
         self.treeview.heading("Categoría", text="Categoría")
         self.treeview.heading("Monto", text="Monto")
@@ -117,8 +127,19 @@ class VistaGasto:
         self.treeview.heading("Proveedor", text="Proveedor")
         self.treeview.heading("Notas", text="Notas")
         
+        # crear scroll vertical
+        self.scroll_y = ttk.Scrollbar(self.label_frame_lista, orient="vertical", command=self.treeview.yview)
+        self.scroll_y.pack(side="right", fill="y")
+        self.treeview.configure(yscrollcommand=self.scroll_y.set)
+        # crear scroll horizontal
+        self.scroll_x = ttk.Scrollbar(self.label_frame_lista, orient="horizontal", command=self.treeview.xview)
+        self.scroll_x.pack(side="bottom", fill="x")
+        self.treeview.configure(xscrollcommand=self.scroll_x.set)
+        
+        
         self.treeview.pack(fill="both", expand=True)
-
+        
+        self.listar_gastos()
     
    
     def agregar_gasto(self):
@@ -147,6 +168,7 @@ class VistaGasto:
         nuevo_gasto = crear_gasto( descripcion, categoria_id, monto, fecha, metodo_pago, proveedor, notas)
         messagebox.showinfo("Éxito", f"Gasto '{nuevo_gasto.descripcion}' agregado correctamente.")
         self.limpiar_campos()
+        self.listar_gastos()
 
     def abrir_configuracion(self):
         # abrir ventana de configuracion de categorias en una nueva ventana
@@ -165,13 +187,20 @@ class VistaGasto:
         # Obtener los gastos desde la base de datos
         gastos = listar_gastos()
         
+        # monta en formato de entero y en formato de miles 
+    
+        
         # Insertar los datos en el Treeview
         for gasto in gastos:
+            int_monto = int(gasto.monto)
+            # separar por miles chile 
+            monto_chileno = f"{int_monto:,}".replace(",", ".")  # Usa coma como separador y reemplaza por punto
+
             self.treeview.insert("", "end", values=(
                 gasto.id,
                 gasto.descripcion,
                 gasto.categoria.nombre,  # Asumiendo que 'categoria' es un objeto con 'nombre'
-                gasto.monto,
+                monto_chileno,
                 gasto.fecha,
                 gasto.metodo_pago,
                 gasto.proveedor,
@@ -186,13 +215,7 @@ class VistaGasto:
             gasto = eliminar_gasto( int(gasto_id))
             messagebox.showinfo("Éxito", f"Gasto con ID {gasto_id} eliminado.")
             self.listar_gastos()
-        # selected_gasto = self.gastos_listbox.curselection()
-        # if selected_gasto:
-        #     gasto_id = self.gastos_listbox.get(selected_gasto[0]).split(" - ")[0]  # Se asume que el ID es la primera parte del string
-        #     gasto = eliminar_gasto( int(gasto_id))
-        #     messagebox.showinfo("Éxito", f"Gasto con ID {gasto_id} eliminado.")
-        #     self.listar_gastos()
-
+            self.listar_gastos()
     def limpiar_campos(self):
         self.descripcion_entry.delete(0, tk.END)
         self.categoria_combobox.set('')

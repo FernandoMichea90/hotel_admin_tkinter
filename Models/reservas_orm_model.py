@@ -93,8 +93,10 @@ def list_reservations_by_today(fecha_actual):
     today = fecha_actual
     inicio_dia = today.replace(hour=0, minute=0, second=0)
     fin_dia = today.replace(hour=23, minute=59, second=59)
-    print(inicio_dia)
-    print(fin_dia)
+    print('inicio '+str(inicio_dia))
+    print('fin '+ str(fin_dia))
+    
+  
     
     return session.query(Reserva).filter(
         Reserva.check_in >= inicio_dia,

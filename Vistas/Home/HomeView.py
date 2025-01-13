@@ -14,7 +14,7 @@ class HomeView:
         self.main_frame.pack(fill="both", expand=True)
 
         # Título
-        self.titulo = tk.Label(self.main_frame, text="Resumen de Reservas del Mes", font=("Arial", 15))
+        self.titulo = tk.Label(self.main_frame, text="Resumen de Reservas del Mes", font=("Arial", 15), bg=color)
         self.titulo.pack(side="top", pady=10)
 
         # Frame principal para el dashboard
@@ -49,7 +49,7 @@ class HomeView:
         frame = tk.LabelFrame(parent, text=titulo, padx=10, pady=10, bg=color)
         frame.pack(side="left", fill="both", expand=True, padx=5, pady=5)
 
-        label = tk.Label(frame, text=valor_inicial, font=("Arial", 12, "bold"))
+        label = tk.Label(frame, text=valor_inicial, font=("Arial", 12, "bold"),bg=color)
         label.pack(anchor="center")
 
         setattr(self, f"resultado_{clave}", label)  # Dinámicamente almacena las referencias a los labels
