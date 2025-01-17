@@ -19,7 +19,10 @@ class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Sistema de Reservas")
-        self.geometry("800x600+0+0")
+        self.screen_width = self.winfo_screenwidth()
+        self.screen_height = self.winfo_screenheight()
+        self.geometry(f"{int(self.screen_width * 0.8)}x{int(self.screen_height * 0.8)}+50+50")
+        self.title("Sistema de Reservas")
     
         # Configuración de la ventana principal
         self.grid_rowconfigure(0, weight=1)

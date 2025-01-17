@@ -10,11 +10,13 @@ class HomeView:
     def __init__(self, master):
         self.master = master
         self.master.focus_set()
+        self.screen_width = self.master.winfo_screenwidth()
+        self.font_size=int(self.screen_width*0.02)
         self.main_frame = tk.Frame(self.master, padx=10, pady=10, bg="white")
         self.main_frame.pack(fill="both", expand=True)
 
         # Título
-        self.titulo = tk.Label(self.main_frame, text="Resumen de Reservas del Mes", font=("Arial", 15), bg=color)
+        self.titulo = tk.Label(self.main_frame, text="Resumen de Reservas del Mes", font=("Arial", self.font_size), bg=color)
         self.titulo.pack(side="top", pady=10)
 
         # Frame principal para el dashboard
