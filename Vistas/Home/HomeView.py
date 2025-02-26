@@ -14,10 +14,19 @@ class HomeView:
         self.font_size=int(self.screen_width*0.02)
         self.main_frame = tk.Frame(self.master, padx=10, pady=10, bg="white")
         self.main_frame.pack(fill="both", expand=True)
-
+        self.posicion=0
         # Título
-        self.titulo = tk.Label(self.main_frame, text="Resumen de Reservas del Mes", font=("Arial", self.font_size), bg=color)
-        self.titulo.pack(side="top", pady=10)
+        #crean un frame para el titulo y los botones
+        self.titulo_frame = tk.Frame(self.main_frame, bg=color)
+        self.titulo_frame.pack(fill="both", expand=False)
+        # agregar un boton atras para restar el mes
+        self.boton_atras = tk.Button(self.titulo_frame,command=self.boton_atras, text="Atras", font=("Arial", self.font_size), bg=color)
+        self.boton_atras.pack(side="left", pady=10)
+        self.titulo = tk.Label(self.titulo_frame, text="Resumen de Reservas del Mes", font=("Arial", self.font_size), bg=color)
+        self.titulo.pack(side="left", pady=10,expand=True)
+        #agregar un boton adelante para sumar el mes
+        self.boton_adelante = tk.Button(self.titulo_frame, text="Adelante", font=("Arial", self.font_size), bg=color)
+        self.boton_adelante.pack(side="left", pady=10)
 
         # Frame principal para el dashboard
         self.dashboard_frame = tk.Frame(self.main_frame, bg=color)
@@ -62,7 +71,7 @@ class HomeView:
 
     def mostrar_datos_mes(self):
         # Llamar al controller para obtener los resultados
-        resultados = obtener_datos_del_mes()
+        resultados = obtener_datos_del_mes(self)
         resultados_gastos = obtener_gastos_mes()
 
         
@@ -111,3 +120,7 @@ class HomeView:
 
         canvas.get_tk_widget().configure(bg='red')
 
+    def boton_atras(self):
+        self.posicion-=1
+        messagebox.showinfo("Aviso","Boton atras"+str(self.posicion))
+        self.mostrar_datos_mes()

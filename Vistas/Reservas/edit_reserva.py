@@ -144,11 +144,40 @@ def editar_reserva(self, reserva_id, frame=None,window=None,update_table=None):
     dte_label.grid(row=2, column=0, sticky="w", pady=5)
     dte_entry.grid(row=2, column=1, sticky="w", padx=10, pady=5)
     dte_entry.set(reserva_data.tipo_documento)
+    
+    print("Facturado",reserva_data.facturado)
+    # Facturado checkbox
+    facturado_label = tk.Label(step3, text="Facturado", font=("Arial", 12), bg="white")
+    facturado_label.grid(row=3, column=0, sticky="w", pady=5)
+    
+    facturado_entry = ctk.CTkCheckBox(step3, text="Facturado")
+    facturado_entry.grid(row=3, column=1, sticky="w", pady=5,padx=10)
+    if reserva_data.facturado == 1:
+        facturado_entry.select()
+    else:
+        facturado_entry.deselect()    
+        
+    # Folio DTE
+    folio_dte_entry = ctk.CTkEntry(step3, width=300)
+    folio_dte_label = tk.Label(step3, text="Folio DTE", font=("Arial", 12), bg="white")
+    folio_dte_label.grid(row=4, column=0, sticky="w", pady=5)
+    folio_dte_entry.grid(row=4, column=1, sticky="w", padx=10, pady=5)
+    folio_dte_entry.insert(0, reserva_data.folio_factura)
+
+        
+    
+    #Transbank entry
+    transbank_entry = ctk.CTkEntry(step3, width=300)
+    transbank_label = tk.Label(step3, text="Transbank", font=("Arial", 12), bg="white")
+    transbank_label.grid(row=5, column=0, sticky="w", pady=5)
+    transbank_entry.grid(row=5, column=1, sticky="w", padx=10, pady=5)
+    transbank_entry.insert(0, reserva_data.transbank)
+    
 
     estado_pago_entry = ctk.CTkOptionMenu(step3, values=estado_pago_options)
     estado_pago_label = tk.Label(step3, text="Estado Pago", font=("Arial", 12), bg="white")
-    estado_pago_label.grid(row=3, column=0, sticky="w", pady=5)
-    estado_pago_entry.grid(row=3, column=1, sticky="w", padx=10, pady=5)
+    estado_pago_label.grid(row=6, column=0, sticky="w", pady=5)
+    estado_pago_entry.grid(row=6, column=1, sticky="w", padx=10, pady=5)
     estado_pago_entry.set(reserva_data.estado2)
 
     # Botón para actualizar
@@ -157,15 +186,32 @@ def editar_reserva(self, reserva_id, frame=None,window=None,update_table=None):
         text="Guardar Cambios",
         command=lambda: actualizar_reserva(
             reserva_id,
-            nombre_entry.get(), apellido_entry.get(), correo_entry.get(),
-            celular_entry.get(), direccion_entry.get(), rut_pasaporte_entry.get(),
-            pais_entry.get(), checkin_entry.get_date(), checkout_entry.get_date(),
-            habitacion_entry.get(), adultos_entry.get(), ninos_entry.get(),
-            precio_entry.get(), procedencia_entry.get(), metodo_pago_entry.get(),
-            dte_entry.get(), estado_pago_entry.get(),window,update_table,self.content_frame
+            nombre_entry.get(),
+            apellido_entry.get(), 
+            correo_entry.get(),
+            celular_entry.get(), 
+            direccion_entry.get(), 
+            rut_pasaporte_entry.get(),
+            pais_entry.get(), 
+            checkin_entry.get_date(),
+            checkout_entry.get_date(),
+            habitacion_entry.get(), 
+            adultos_entry.get(), 
+            ninos_entry.get(),
+            precio_entry.get(), 
+            procedencia_entry.get(),
+            metodo_pago_entry.get(),
+            dte_entry.get(), 
+            estado_pago_entry.get(),
+            transbank_entry.get(),
+            facturado_entry.get(),
+            folio_dte_entry.get(),
+            window,
+            update_table,
+            self.content_frame
         )
     )
-    save_btn.grid(row=4, columnspan=2, pady=20)
+    save_btn.grid(row=7, columnspan=2, pady=20)
     
 def get_parent_of_parent(widget):
     # Get the first parent
@@ -177,7 +223,7 @@ def get_parent_of_parent(widget):
             return widget.nametowidget(parent_of_parent)
     return None
 
-def actualizar_reserva(reserva_id, nombre, apellido, correo, celular, direccion, rut_pasaporte, pais, checkin, checkout, habitacion, adultos, ninos, precio, procedencia, metodo_pago, dte, estado_pago="Pendiente",window=None,update_table=None,frame=None):
+def actualizar_reserva(reserva_id, nombre, apellido, correo, celular, direccion, rut_pasaporte, pais, checkin, checkout, habitacion, adultos, ninos, precio, procedencia, metodo_pago, dte, estado_pago="Pendiente",transbank=0,facturado=False,folio_dte=0,window=None,update_table=None,frame=None):
     """Actualizar los datos de una reserva existente."""
     
     # Imprimir los valores de las variables antes de enviarlas al controlador
@@ -201,10 +247,15 @@ def actualizar_reserva(reserva_id, nombre, apellido, correo, celular, direccion,
     print(f"DTE: {dte}")
     print(f"Estado de pago: {estado_pago}")
     print('---------------------------------------')
+    print(f"Transbank: {transbank}")
+    print(f"Facturado: {facturado}")
+    print(f"Folio DTE: {folio_dte}")
+    print('---------------------------------------')
+    
     
     # Llamada al controlador para actualizar la reserva
     controller = ReservasController()
-    updated = controller.actualizar_reserva(reserva_id, nombre, apellido, correo, celular, direccion, rut_pasaporte, pais, checkin, checkout, habitacion, adultos, ninos, precio, procedencia, metodo_pago, dte, estado_pago)
+    updated = controller.actualizar_reserva(reserva_id, nombre, apellido, correo, celular, direccion, rut_pasaporte, pais, checkin, checkout, habitacion, adultos, ninos, precio, procedencia, metodo_pago, dte, estado_pago,transbank,facturado,folio_dte)
     if updated:
         messagebox.showinfo("Éxito", "Reserva actualizada correctamente.")
         if window:
@@ -221,3 +272,4 @@ def actualizar_reserva(reserva_id, nombre, apellido, correo, celular, direccion,
             
     else:
         messagebox.showerror("Error", "No se pudo actualizar la reserva.")
+    

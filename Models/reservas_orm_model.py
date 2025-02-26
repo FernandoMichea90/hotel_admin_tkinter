@@ -14,6 +14,8 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import or_, and_
 from Utils.Database import Base,db
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
+
 
 
 session=db;
@@ -103,10 +105,12 @@ def list_reservations_by_today(fecha_actual):
         Reserva.check_in <= fin_dia
     ).all()
 
-def obtener_datos_del_mes():
+def obtener_datos_del_mes(self):
     # Obtener la fecha actual
     fecha_actual = datetime.now()
-
+    if self.posicion != 0:
+            fecha_actual = fecha_actual + relativedelta(months=self.posicion)
+    print(fecha_actual)
     # Obtener el primer y último día del mes actual
     inicio_mes = fecha_actual.replace(day=1,hour=0,minute=0,second=0,microsecond=0)
     inicio_mes = inicio_mes - timedelta(seconds=1)  # obtener el último día del mes

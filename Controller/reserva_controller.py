@@ -83,7 +83,7 @@ class ReservasController:
         except Exception as e:
             return {"status": "error", "message": str(e)}
         
-    def actualizar_reserva(self,reserva_id, nombre, apellido, correo, celular, direccion, rut_pasaporte, pais, checkin, checkout, habitacion, adultos, ninos, precio, procedencia, metodo_pago, dte, estado_pago):
+    def actualizar_reserva(self,reserva_id, nombre, apellido, correo, celular, direccion, rut_pasaporte, pais, checkin, checkout, habitacion, adultos, ninos, precio, procedencia, metodo_pago, dte, estado_pago,transbank,facturado,folio_factura):
         try:
             print('actualizar reserva' +estado_pago)
             reserva_data = {
@@ -104,7 +104,11 @@ class ReservasController:
                 "procedencia": procedencia,
                 "pago": metodo_pago,
                 "tipo_documento": dte,
-                "estado2": estado_pago
+                "estado2": estado_pago,
+                "transbank": transbank,
+                "facturado": facturado,
+                "folio_factura": folio_factura
+                
             }
             # agregar atributos calculados: codigo, noches, precio_unitario
             # dias transcurridos
